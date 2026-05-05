@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}AgriSoc Kenya — Home{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <p class="hero-eyebrow">Agricultural Society of Kenya</p>
+    <h1>Where Farmers<br><em>Grow Together</em></h1>
+    <p>Connecting crop farmers, livestock keepers and agri-businesses across Kenya's four regions. Rooted in community since 1952.</p>
+    <div class="hero-actions">
+      <a href="{{ url_for('public.join') }}"       class="btn btn-gold">Join the Society</a>
+      <a href="{{ url_for('public.resources') }}"  class="btn btn-secondary" style="color:var(--straw);border-color:rgba(232,201,154,.5)">Browse Library</a>
+    </div>
+    <div class="hero-stats-row">
+      <div>
+        <div class="hero-stat-num" data-target="{{ stats.active_members or 0 }}">0</div>
+        <div class="hero-stat-label">Active Members</div>
+      </div>
+      <div>
+        <div class="hero-stat-num" data-target="{{ stats.active_branches or 0 }}">0</div>
+        <div class="hero-stat-label">Branches</div>
+      </div>
+      <div>
+        <div class="hero-stat-num" data-target="{{ stats.available_resources or 0 }}">0</div>
+        <div class="hero-stat-label">Resources</div>
+      </div>
+      <div>
+        <div class="hero-stat-num" data-target="{{ stats.upcoming_shows or 0 }}">0</div>
+        <div class="hero-stat-label">Upcoming Shows</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Announcements -->
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Latest Announcements</h2>
+      <div class="divider"></div>
+      <p>News and updates from across our branches</p>
+    </div>
+    {% if announcements %}
+    <div class="grid-2">
+      {% for a in announcements %}
+      <div class="card announce-card" style="border-left-color:{% if a.priority=='high' %}var(--rust){% else %}var(--gold){% endif %}">
+        <div class="card-body">
+          <div style="display:flex;gap:.5rem;margin-bottom:.5rem;flex-wrap:wrap">
+            {% if a.priority=='high' %}<span class="badge badge-rust">Urgent</span>{% endif %}
+            {% if a.branchname %}<span class="badge badge-soil">{{ a.branchname }}</span>{% endif %}
+          </div>
+          <h3 class="card-title">{{ a.title }}</h3>
+          <p style="font-size:.86rem;margin-top:.4rem">{{ a.excerpt }}{% if a.excerpt and a.excerpt|length >= 180 %}…{% endif %}</p>
+          <div class="announce-meta">
+            <span>📅 {{ a.posteddate.strftime('%d %b %Y') if a.posteddate else '' }}</span>
+            {% if a.postedby %}<span>✍ {{ a.postedby }}</span>{% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><span>📋</span>No announcements yet.</div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- Upcoming Shows -->
+{% if shows %}
+<section class="section" style="background:var(--cream);background-image:url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1600&auto=format&fit=crop&q=40');background-size:cover;background-position:center;background-blend-mode:multiply;">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Upcoming Shows &amp; Events</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="grid-3">
+      {% for s in shows %}
+      <div class="card show-card">
+        <div class="show-date">
+          <div class="day">{{ s.eventdate.strftime('%d') }}</div>
+          <div class="mon">{{ s.eventdate.strftime('%b') }}</div>
+          <div class="yr">{{ s.eventdate.strftime('%Y') }}</div>
+        </div>
+        <div class="show-info">
+          <h3 class="card-title">{{ s.town }} Agricultural Show</h3>
+          <div style="font-size:.82rem;color:#8B7355;margin-top:.4rem">📍 {{ s.branchname }} &mdash; {{ s.location }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('public.shows') }}" class="btn btn-secondary">View All Shows</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Branches -->
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <h2>Our Branches</h2>
+      <div class="divider"></div>
+      <p>Serving farmers in every corner of Kenya</p>
+    </div>
+    <div class="grid-4">
+      {% set icons = ['🌾','🐄','🌊','🌻'] %}
+      {% for b in branches %}
+      <div class="card" style="text-align:center;padding:2rem 1.5rem">
+        <div style="font-size:2.4rem;margin-bottom:.75rem">{{ icons[loop.index0 % 4] }}</div>
+        <h3 class="card-title">{{ b.branchname }}</h3>
+        <p style="font-size:.84rem">📍 {{ b.location }}</p>
+        <div style="font-size:.78rem;color:#8B7355;margin-top:.4rem">{{ b.member_count }} members</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Oracle 21c Feature Strip -->
+<section style="background:var(--soil);padding:4rem 0;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1600&auto=format&fit=crop&q=30');background-size:cover;opacity:.07"></div>
+  <div class="container" style="position:relative">
+    <div class="section-heading">
+      <h2 style="color:var(--cream)">Powered by Oracle Database 21c</h2>
+      <div class="divider"></div>
+      <p style="color:var(--straw)">Production-grade Oracle 21c features driving every page of this system</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.25rem">
+      {% set feats = [
+        ('🔗','Blockchain Tables','Tamper-evident payment ledger. Every transaction is cryptographically chained — immutable forever.'),
+        ('🧊','Immutable Tables','Append-only borrow history archive. Records survive 90 days minimum, enforced at engine level.'),
+        ('🔬','SQL Macros','Zero-overhead reusable SQL fragments inlined at parse time — scalar and table macros.'),
+        ('📦','Native JSON','announcements.metadata stores rich JSON in Oracle\'s native OSON binary format, queryable with JSON_VALUE.'),
+        ('🕸️','Property Graph','Members, branches and resources form a live graph. D3 visualises the borrow network in real-time.'),
+        ('⚡','Triggers & Audit','Four triggers automate auditing, archive, stock guard and blockchain writes — no app code needed.'),
+        ('🔑','Roles & Privileges','Three layered roles: readonly → member → admin, each with precisely scoped GRANT statements.'),
+        ('📐','Virtual Columns','fullName is a VIRTUAL column computed from firstName+secondName — always current, never stale.'),
+        ('🔍','Advanced Indexes','B-tree, composite, function-based and invisible indexes tuned to the exact query patterns.'),
+        ('📊','Partitioning','paymentArchive is INTERVAL range-partitioned by year — future years auto-create without DBA action.')
+      ] %}
+      {% for icon, title, desc in feats %}
+      <div class="feature-card" style="background:rgba(255,255,255,.05);border-color:rgba(200,135,42,.2)">
+        <div class="feature-icon">{{ icon }}</div>
+        <div class="feature-tag">Oracle 21c</div>
+        <h3 style="color:var(--cream)">{{ title }}</h3>
+        <p style="color:var(--straw)">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <a href="{{ url_for('public.oracle_features') }}" class="btn btn-gold">Read Full Documentation →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Join CTA -->
+<section class="section" style="background:var(--cream);background-image:url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=1600&auto=format&fit=crop&q=40');background-size:cover;background-blend-mode:multiply;">
+  <div class="container text-center">
+    <h2>Ready to grow with us?</h2>
+    <div class="divider"></div>
+    <p style="max-width:480px;margin:.5rem auto 2rem">Join thousands of Kenyan farmers. Access the library, attend regional shows, and be part of a community that has been growing together since 1952.</p>
+    <a href="{{ url_for('public.join') }}" class="btn btn-primary" style="font-size:1rem;padding:.75rem 2.2rem">Become a Member</a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — AgriSoc Kenya{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem">
+      <div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div>
+    </div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}" class="active">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+
+  <!-- Main -->
+  <div class="admin-main">
+    <div class="flex-between mb-3">
+      <h2 style="font-size:1.6rem">Dashboard</h2>
+      <span class="mono badge badge-gold">Oracle 21c</span>
+    </div>
+
+    <!-- KPI Grid -->
+    <div class="admin-stat-grid">
+      <div class="admin-stat-card">
+        <div class="admin-stat-num" data-target="{{ stats.active_members or 0 }}">0</div>
+        <div class="admin-stat-label">Active Members</div>
+        <div class="admin-stat-sub">of {{ stats.total_members or 0 }} total</div>
+      </div>
+      <div class="admin-stat-card green">
+        <div class="admin-stat-num" data-target="{{ stats.available_resources or 0 }}">0</div>
+        <div class="admin-stat-label">Available Resources</div>
+        <div class="admin-stat-sub">{{ stats.active_borrows or 0 }} currently borrowed</div>
+      </div>
+      <div class="admin-stat-card" style="border-top-color:var(--gold)">
+        <div class="admin-stat-num" data-target="{{ stats.upcoming_shows or 0 }}">0</div>
+        <div class="admin-stat-label">Upcoming Shows</div>
+      </div>
+      <div class="admin-stat-card sky">
+        <div class="admin-stat-num" data-prefix="KES " data-target="{{ (stats.total_revenue or 0)|int }}">0</div>
+        <div class="admin-stat-label">Total Revenue</div>
+        <div class="admin-stat-sub">KES {{ '{:,.0f}'.format(stats.revenue_this_month or 0) }} this month</div>
+      </div>
+      {% if stats.overdue_borrows %}
+      <div class="admin-stat-card rust">
+        <div class="admin-stat-num" data-target="{{ stats.overdue_borrows }}">0</div>
+        <div class="admin-stat-label">Overdue Borrows</div>
+        <div class="admin-stat-sub">&gt;14 days unreturned</div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="grid-2">
+      <div class="admin-card">
+        <div class="admin-card-title">Monthly Revenue (Last 12 Months)</div>
+        <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Membership Growth</div>
+        <div class="chart-wrap"><canvas id="growthChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="grid-2 mt-2">
+      <div class="admin-card">
+        <div class="admin-card-title">Revenue by Payment Type</div>
+        <div class="chart-wrap"><canvas id="categoryChart"></canvas></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Members per Branch</div>
+        <div class="chart-wrap"><canvas id="branchChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Property Graph Network -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">🕸 Member–Resource Borrow Network <span class="badge badge-gold mono" style="font-size:.68rem">Property Graph</span></div>
+      <p style="font-size:.82rem;margin-bottom:1rem">Each node is a member (coloured by branch) or resource. Edges represent borrow relationships. Drag nodes to explore.</p>
+      <div id="networkGraph" style="position:relative;min-height:420px"></div>
+    </div>
+
+    <!-- Branch Revenue Bar -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Revenue by Branch</div>
+      <div class="chart-wrap"><canvas id="revBranchChart"></canvas></div>
+    </div>
+
+    <!-- Top Borrowers -->
+    {% if top_borrowers %}
+    <div class="admin-card mt-2">
+      <div class="admin-card-title flex-between">
+        <span>Top Borrowers</span>
+        <span class="badge badge-gold mono" style="font-size:.68rem">SQL Macro + Virtual Col</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Member</th><th>Branch</th><th>Total Borrows</th><th>Active</th><th>Last Borrow</th></tr></thead>
+          <tbody>
+            {% for b in top_borrowers %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td><strong>{{ b.member_name }}</strong></td>
+              <td><span class="badge badge-soil">{{ b.branchname }}</span></td>
+              <td>{{ b.total_borrows }}</td>
+              <td>{% if b.active_borrows %}<span class="badge badge-rust">{{ b.active_borrows }}</span>{% else %}<span class="badge badge-green">0</span>{% endif %}</td>
+              <td style="font-size:.8rem">{{ b.last_borrow_date.strftime('%d %b %Y') if b.last_borrow_date else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Overdue Borrows -->
+    {% if overdue %}
+    <div class="admin-card mt-2" style="border-top:3px solid var(--rust)">
+      <div class="admin-card-title">⚠ Overdue Borrows (&gt;14 days)</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Member</th><th>Email</th><th>Resource</th><th>Branch</th><th>Days Overdue</th><th>Borrow Date</th></tr></thead>
+          <tbody>
+            {% for o in overdue %}
+            <tr>
+              <td><strong>{{ o.member_name }}</strong></td>
+              <td><a href="mailto:{{ o.email }}" style="font-size:.82rem">{{ o.email }}</a></td>
+              <td>{{ o.resource_title }}</td>
+              <td>{{ o.branchname }}</td>
+              <td><span class="badge badge-rust">{{ o.days_overdue }} days</span></td>
+              <td style="font-size:.8rem">{{ o.borrowdate.strftime('%d %b %Y') if o.borrowdate else '' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Branch Report -->
+    {% if branch_report %}
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Branch Performance Summary</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Branch</th><th>Location</th><th>Total</th><th>Active</th><th>Officials</th><th>Shows</th><th>Revenue (KES)</th></tr></thead>
+          <tbody>
+            {% for b in branch_report %}
+            <tr>
+              <td><strong>{{ b.branchname }}</strong></td>
+              <td>{{ b.location }}</td>
+              <td>{{ b.total_members }}</td>
+              <td><span class="badge badge-green">{{ b.active_members }}</span></td>
+              <td>{{ b.official_count }}</td>
+              <td>{{ b.total_shows }}</td>
+              <td><strong>{{ '{:,.0f}'.format(b.total_revenue) }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Add Announcement -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Post Announcement <span class="badge badge-sky mono" style="font-size:.68rem">Native JSON Metadata</span></div>
+      <form action="{{ url_for('admin.add_announcement') }}" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Branch (optional)</label>
+            <select name="branchID" class="form-control">
+              <option value="">All Branches</option>
+              {% for b in branch_report %}
+              <option value="{{ b.branchid }}">{{ b.branchname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Body</label>
+          <textarea name="body" class="form-control" required></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select name="priority" class="form-control">
+              <option value="normal">Normal</option>
+              <option value="high">High / Urgent</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Posted By</label>
+            <input type="text" name="postedBy" class="form-control" value="Admin" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tags (comma-separated)</label>
+          <input type="text" name="tags" class="form-control" placeholder="e.g. crops, drought, meeting">
+          <p class="form-hint">Stored as JSON metadata on the announcement record (Oracle 21c native JSON type)</p>
+        </div>
+        <button type="submit" class="btn btn-primary">Post Announcement</button>
+      </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/charts.js') }}"></script>{% endblock %}

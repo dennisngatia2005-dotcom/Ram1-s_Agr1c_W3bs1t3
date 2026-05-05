@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Member Sign In — AgriSoc Kenya{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('https://images.unsplash.com/photo-1560493676-04071c5f467b?w=1400&auto=format&fit=crop&q=50')"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container page-hero-inner">
+    <p class="breadcrumb"><a href="{{ url_for('public.index') }}">Home</a> › Sign In</p>
+    <h1>Member Portal</h1>
+    <p>Sign in to access your dashboard, library and payments</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container" style="max-width:480px">
+    <div class="card">
+      <div class="card-header">
+        <h3 style="font-family:var(--font-display);font-size:1.2rem;color:var(--soil)">Sign In</h3>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('members.login') }}" method="POST">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" name="email" class="form-control" required placeholder="you@example.com" autofocus>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" placeholder="Your password">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Member ID <span style="color:#8B7355;font-weight:400">(first-time login PIN)</span></label>
+            <input type="text" name="pin" class="form-control" placeholder="e.g. 42 — only needed if no password set">
+            <p class="form-hint">New members: use your Member ID shown at registration as a one-time PIN. Set a password afterwards.</p>
+          </div>
+          <button type="submit" class="btn btn-primary w-full" style="justify-content:center;padding:.72rem">
+            Sign In
+          </button>
+        </form>
+        <hr class="divider-h">
+        <p style="text-align:center;font-size:.84rem;color:#8B7355">
+          Not a member yet? <a href="{{ url_for('public.join') }}">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

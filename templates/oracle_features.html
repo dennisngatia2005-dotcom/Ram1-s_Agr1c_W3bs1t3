@@ -1,0 +1,898 @@
+{% extends "base.html" %}
+{% block title %}Oracle 21c Features — AgriSoc Kenya{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<style>
+.doc-hero{background:var(--soil);padding:5rem 0 4rem;position:relative;overflow:hidden}
+.doc-hero-bg{position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1600&auto=format&fit=crop&q=30');background-size:cover;opacity:.08}
+.doc-hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(30,18,8,.96),rgba(45,90,39,.75))}
+.doc-nav{position:sticky;top:66px;z-index:90;background:var(--cream);border-bottom:2px solid var(--border);padding:.6rem 0;overflow-x:auto}
+.doc-nav-inner{max-width:var(--max-w);margin:0 auto;padding:0 1.5rem;display:flex;gap:.4rem;flex-wrap:nowrap;white-space:nowrap}
+.doc-nav a{font-size:.78rem;font-weight:600;color:#8B7355;padding:.3rem .8rem;border-radius:999px;text-decoration:none;transition:all .18s}
+.doc-nav a:hover{background:var(--leaf);color:#fff}
+.doc-section{padding:4.5rem 0;border-bottom:1px solid var(--border)}
+.doc-section:nth-child(even){background:var(--cream)}
+.feature-header{display:flex;align-items:flex-start;gap:1.25rem;margin-bottom:1.5rem}
+.feature-num{font-family:var(--font-mono);font-size:.72rem;color:var(--gold);background:rgba(200,135,42,.12);border:1px solid rgba(200,135,42,.3);border-radius:var(--radius);padding:.3rem .7rem;white-space:nowrap;margin-top:.25rem}
+.why-box{background:rgba(45,90,39,.06);border-left:4px solid var(--leaf);border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.25rem;margin-top:1rem;font-size:.88rem}
+.why-box strong{color:var(--leaf)}
+.how-box{background:rgba(200,135,42,.07);border-left:4px solid var(--gold);border-radius:0 var(--radius) var(--radius) 0;padding:1rem 1.25rem;margin-top:.75rem;font-size:.88rem}
+.how-box strong{color:var(--gold)}
+.diagram-box{background:var(--soil);border-radius:var(--radius-lg);padding:1.5rem;margin-top:1.25rem;border:1px solid rgba(200,135,42,.2)}
+.diagram-box svg{width:100%;display:block}
+.live-badge{display:inline-flex;align-items:center;gap:.35rem;background:rgba(45,90,39,.1);border:1px solid rgba(45,90,39,.25);color:var(--leaf);border-radius:999px;font-size:.7rem;font-weight:700;padding:.2rem .6rem;margin-left:.5rem}
+.live-badge::before{content:'●';animation:blink 1.4s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:2rem}
+.toc-item{background:rgba(255,255,255,.05);border:1px solid rgba(200,135,42,.2);border-radius:var(--radius-lg);padding:1.1rem;text-decoration:none;transition:all .18s;display:flex;align-items:center;gap:.85rem}
+.toc-item:hover{background:rgba(200,135,42,.12);text-decoration:none;transform:translateY(-2px)}
+.toc-item-icon{font-size:1.8rem;flex-shrink:0}
+.toc-item-text{font-size:.84rem;color:var(--straw);font-weight:500}
+.toc-item-tag{font-size:.68rem;color:var(--gold);font-family:var(--font-mono);display:block;margin-top:.15rem}
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<div class="doc-hero">
+  <div class="doc-hero-bg"></div>
+  <div class="doc-hero-overlay"></div>
+  <div class="container" style="position:relative">
+    <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem">
+      <span style="font-size:3rem">🛢</span>
+      <div>
+        <p style="font-size:.72rem;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:700">Technical Documentation</p>
+        <h1 style="color:var(--cream);font-size:clamp(1.8rem,4vw,3rem)">Oracle Database 21c<br><em style="color:var(--moss)">Advanced Features Guide</em></h1>
+      </div>
+    </div>
+    <p style="color:var(--straw);max-width:640px;font-size:1rem;line-height:1.75">
+      A complete reference for every Oracle 21c advanced feature used in the AgriSoc Kenya database — covering what each feature is, how it works internally, how we use it, and why it was chosen over alternatives.
+    </p>
+    <!-- TOC Grid -->
+    <div class="toc-grid">
+      {% for anchor, icon, title, tag in [
+        ('#blockchain','🔗','Blockchain Tables','APPEND-ONLY · SHA2_512'),
+        ('#immutable','🧊','Immutable Tables','APPEND-ONLY · NO DELETE'),
+        ('#json','📦','Native JSON Type','OSON · JSON_VALUE'),
+        ('#sql-macros','🔬','SQL Macros','SCALAR · TABLE · 21c'),
+        ('#virtual','📐','Virtual Columns','GENERATED ALWAYS AS'),
+        ('#invisible','👁','Invisible Columns','INVISIBLE · Security'),
+        ('#partitioning','📊','Partitioned Tables','INTERVAL RANGE'),
+        ('#graph','🕸','Property Graph','VERTEX · EDGE · PGQL'),
+        ('#indexes','🔍','Indexes','B-TREE · COMPOSITE · FBI'),
+        ('#triggers','⚡','Triggers','AUDIT · GUARD · ARCHIVE'),
+        ('#roles','🔑','Roles & Privileges','GRANT · LEAST PRIVILEGE'),
+        ('#procedures','🗄','Advanced Procedures','REFCURSOR · ANALYTICS')
+      ] %}
+      <a href="{{ anchor }}" class="toc-item">
+        <span class="toc-item-icon">{{ icon }}</span>
+        <div>
+          <div class="toc-item-text">{{ title }}</div>
+          <span class="toc-item-tag">{{ tag }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Sticky doc nav -->
+<div class="doc-nav">
+  <div class="doc-nav-inner">
+    {% for anchor, label in [
+      ('#blockchain','Blockchain'),('#immutable','Immutable'),('#json','JSON'),
+      ('#sql-macros','SQL Macros'),('#virtual','Virtual Cols'),('#invisible','Invisible Cols'),
+      ('#partitioning','Partitioning'),('#graph','Property Graph'),
+      ('#indexes','Indexes'),('#triggers','Triggers'),('#roles','Roles'),('#procedures','Procedures')
+    ] %}
+    <a href="{{ anchor }}">{{ label }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 1. BLOCKCHAIN TABLES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="blockchain">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🔗</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h2>Blockchain Tables</h2>
+          <span class="feature-num">Oracle 21c NEW</span>
+        </div>
+        <p style="margin-top:.4rem">Cryptographically tamper-evident, append-only ledger tables</p>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <h3 style="margin-bottom:.75rem">What is it?</h3>
+        <p style="margin-bottom:.75rem">A Blockchain Table is a special Oracle table where each row is cryptographically chained to the row inserted before it using a hash algorithm (SHA2_512 in our case). Once a row is inserted, it <strong>cannot be updated or deleted</strong> — the database enforces this at the engine level, not the application level.</p>
+        <p>The "chain" means that if anyone attempts to tamper with the data outside of Oracle (via OS-level file editing or backup restoration), the chain verification will fail and Oracle will report the corruption.</p>
+
+        <div class="why-box">
+          <strong>Why we use it:</strong> Every payment made by a member is automatically written to <code>paymentAuditLedger</code> by a trigger. This gives us a forensic-grade payment history that no admin, developer or DBA can erase or alter — regardless of their database privileges.
+        </div>
+        <div class="how-box">
+          <strong>How it works in AgriSoc:</strong> The <code>trg_payment_blockchain</code> trigger fires AFTER every INSERT on <code>payment</code> and writes a row to the blockchain table. The <code>NO DELETE UNTIL 31 DAYS AFTER INSERT</code> clause means rows survive at least 31 days. <code>NO DROP UNTIL 31 DAYS IDLE</code> prevents the table from being dropped while recent data exists.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Oracle 21c: Create a Blockchain Table</span>
+<span class="kw">CREATE BLOCKCHAIN TABLE</span> <span class="str">"paymentAuditLedger"</span> (
+    <span class="str">"ledgerID"</span>    NUMBER <span class="kw">GENERATED BY DEFAULT AS IDENTITY</span>,
+    <span class="str">"paymentID"</span>   NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"memberID"</span>    NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"amount"</span>      NUMBER(10,2)  <span class="kw">NOT NULL</span>,
+    <span class="str">"paymentType"</span> VARCHAR2(30)  <span class="kw">NOT NULL</span>,
+    <span class="str">"actionTime"</span>  TIMESTAMP     <span class="kw">DEFAULT SYSTIMESTAMP</span>,
+    <span class="str">"actionBy"</span>    VARCHAR2(60)  <span class="kw">DEFAULT USER</span>
+)
+<span class="kw">NO DROP UNTIL</span> 31 <span class="kw">DAYS IDLE</span>
+<span class="kw">NO DELETE UNTIL</span> 31 <span class="kw">DAYS AFTER INSERT</span>
+<span class="kw">HASHING USING</span> <span class="str">"SHA2_512"</span> <span class="kw">VERSION</span> <span class="str">"v1"</span>;
+
+<span class="cm">-- Trigger that feeds it automatically</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="str">"trg_payment_blockchain"</span>
+<span class="kw">AFTER INSERT ON</span> <span class="str">"payment"</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="str">"paymentAuditLedger"</span>
+        (<span class="str">"paymentID"</span>, <span class="str">"memberID"</span>, <span class="str">"amount"</span>, <span class="str">"paymentType"</span>)
+    <span class="kw">VALUES</span>
+        (:NEW.<span class="str">"paymentID"</span>, :NEW.<span class="str">"memberID"</span>,
+         :NEW.<span class="str">"amount"</span>,    :NEW.<span class="str">"paymentType"</span>);
+<span class="kw">END</span>;
+/</div>
+        <!-- Live data -->
+        <div id="blockchain-live" style="margin-top:1rem;font-size:.82rem;color:#8B7355">Loading live ledger count…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 2. IMMUTABLE TABLES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="immutable">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🧊</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h2>Immutable Tables</h2>
+          <span class="feature-num">Oracle 21c NEW</span>
+        </div>
+        <p style="margin-top:.4rem">Append-only tables for historical archives — lighter than blockchain, without cryptographic chaining</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">Immutable Tables are similar to Blockchain Tables in that rows cannot be deleted or updated, but they do <em>not</em> chain rows cryptographically. They are a lighter-weight option for archiving data where you want immutability enforced by the database but don't need tamper-evidence verification.</p>
+        <div class="why-box">
+          <strong>Why we use it:</strong> <code>borrowHistory</code> is an immutable table that receives a copy of every completed borrow (when <code>returnDate</code> is set). This gives us a permanent, unalterable library history — useful for annual reporting and member dispute resolution.
+        </div>
+        <div class="how-box">
+          <strong>How it works:</strong> The <code>trg_borrow_archive</code> trigger fires AFTER UPDATE on <code>returnDate</code> (when a resource is returned) and inserts a snapshot row into <code>borrowHistory</code>. The <code>NO DELETE UNTIL 90 DAYS AFTER INSERT</code> policy keeps records for a minimum of 90 days.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Oracle 21c: Immutable Table (no crypto chaining)</span>
+<span class="kw">CREATE IMMUTABLE TABLE</span> <span class="str">"borrowHistory"</span> (
+    <span class="str">"historyID"</span>      NUMBER <span class="kw">GENERATED BY DEFAULT AS IDENTITY</span>,
+    <span class="str">"borrowID"</span>       NUMBER       <span class="kw">NOT NULL</span>,
+    <span class="str">"memberName"</span>     VARCHAR2(62) <span class="kw">NOT NULL</span>,
+    <span class="str">"resourceTitle"</span>  VARCHAR2(255)<span class="kw">NOT NULL</span>,
+    <span class="str">"borrowDate"</span>     DATE         <span class="kw">NOT NULL</span>,
+    <span class="str">"returnDate"</span>     DATE,
+    <span class="str">"archivedAt"</span>     TIMESTAMP    <span class="kw">DEFAULT SYSTIMESTAMP</span>
+)
+<span class="kw">NO DROP UNTIL</span> 90 <span class="kw">DAYS IDLE</span>
+<span class="kw">NO DELETE UNTIL</span> 90 <span class="kw">DAYS AFTER INSERT</span>;
+
+<span class="cm">-- Blockchain vs Immutable — key difference:</span>
+<span class="cm">-- Blockchain: rows chained + hash verified = tamper-EVIDENT</span>
+<span class="cm">-- Immutable:  rows protected but no chain = tamper-RESISTANT</span></div>
+        <div id="immutable-live" style="margin-top:1rem;font-size:.82rem;color:#8B7355">Loading archive count…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 3. NATIVE JSON TYPE -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="json">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">📦</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h2>Native JSON Type Column</h2>
+          <span class="feature-num">Oracle 21c NEW</span>
+        </div>
+        <p style="margin-top:.4rem">JSON stored in Oracle's optimised binary OSON format — not CLOB or VARCHAR2</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">Before Oracle 21c, JSON was stored in VARCHAR2 or CLOB columns and Oracle would parse the text on every query. In 21c, the <code>JSON</code> data type stores documents in <strong>OSON (Oracle Optimised Storage for JSON)</strong> — a binary format that is faster to read, smaller on disk, and natively understood by the query engine.</p>
+        <p style="margin-bottom:.75rem">You can query JSON fields using <code>JSON_VALUE()</code>, <code>JSON_QUERY()</code>, dot-notation, or function-based indexes on specific paths.</p>
+        <div class="why-box">
+          <strong>Why we use it:</strong> Announcements have a <code>metadata</code> JSON column storing flexible per-announcement data: priority, author, tags. This avoids creating separate columns for every possible attribute — the schema stays clean while the data stays rich.
+        </div>
+        <div class="how-box">
+          <strong>How we query it:</strong> <code>JSON_VALUE("metadata", '$.priority')</code> extracts the priority field inline in SQL. We also have a function-based index on <code>JSON_VALUE("metadata", '$.priority')</code> so filtering by priority uses the index rather than scanning OSON blobs.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- 21c: Native JSON column (OSON binary, not CLOB)</span>
+<span class="kw">ALTER TABLE</span> <span class="str">"announcement"</span>
+    <span class="kw">ADD</span> (<span class="str">"metadata"</span> <span class="kw">JSON</span>);
+
+<span class="cm">-- Insert with JSON_OBJECT constructor</span>
+<span class="kw">INSERT INTO</span> <span class="str">"announcement"</span> (<span class="str">"title"</span>, <span class="str">"body"</span>, <span class="str">"metadata"</span>)
+<span class="kw">VALUES</span> (
+    <span class="str">'Drought Advisory'</span>,
+    <span class="str">'Farmers are advised...'</span>,
+    <span class="kw">JSON_OBJECT</span>(
+        <span class="str">'priority'</span> <span class="kw">VALUE</span> <span class="str">'high'</span>,
+        <span class="str">'author'</span>   <span class="kw">VALUE</span> <span class="str">'Admin'</span>,
+        <span class="str">'tags'</span>     <span class="kw">VALUE</span> <span class="str">'drought,crops'</span>
+    )
+);
+
+<span class="cm">-- Query using JSON_VALUE</span>
+<span class="kw">SELECT</span> <span class="str">"title"</span>,
+       <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.priority'</span>) <span class="kw">AS</span> priority,
+       <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.author'</span>)   <span class="kw">AS</span> author
+<span class="kw">FROM</span>   <span class="str">"announcement"</span>
+<span class="kw">WHERE</span>  <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.priority'</span>) = <span class="str">'high'</span>;
+
+<span class="cm">-- Function-based index speeds up the above query</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_announcement_priority"</span>
+    <span class="kw">ON</span> <span class="str">"announcement"</span> (<span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.priority'</span>));</div>
+        <div id="json-live" style="margin-top:1rem;font-size:.82rem;color:#8B7355">Loading JSON samples…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 4. SQL MACROS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="sql-macros">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🔬</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h2>SQL Macros</h2>
+          <span class="feature-num">Oracle 21c NEW</span>
+        </div>
+        <p style="margin-top:.4rem">Reusable SQL fragments inlined at parse time — zero runtime overhead</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">SQL Macros are PL/SQL functions that return a SQL fragment as a <code>VARCHAR2</code> string. The key distinction: the returned SQL is <strong>inlined into the calling query at parse time</strong> by the Oracle optimizer — the function body never runs at query execution time.</p>
+        <p style="margin-bottom:.75rem">There are two types: <strong>Scalar Macros</strong> (return a single value expression, usable in SELECT/WHERE) and <strong>Table Macros</strong> (return a full SELECT statement, usable in the FROM clause like a parameterised view).</p>
+        <div class="why-box">
+          <strong>Why vs. pipelined functions or views?</strong> A pipelined function runs at execution time and returns rows via PGA memory — slower. A view cannot accept parameters. A SQL Macro gives you the parameterisation of a function with the performance of a view — the optimizer can see through it and use indexes.
+        </div>
+        <div class="how-box">
+          <strong>Our macros:</strong> (1) <code>member_tenure_years(joinDate)</code> — scalar macro computing membership duration, shown on every member profile. (2) <code>active_borrows_for(memberID)</code> — table macro for a member's current borrows. (3) <code>revenue_in_period(from, to)</code> — table macro for revenue analytics over a custom date range.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- SCALAR SQL Macro: inlines as an expression</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> member_tenure_years(
+    p_joinDate DATE
+) <span class="kw">RETURN</span> VARCHAR2 <span class="kw">SQL_MACRO(SCALAR)</span>
+<span class="kw">IS BEGIN</span>
+    <span class="kw">RETURN</span> <span class="str">q'[
+        ROUND(MONTHS_BETWEEN(SYSDATE, p_joinDate) / 12, 1)
+    ]'</span>;
+<span class="kw">END</span>;
+/
+
+<span class="cm">-- Used in a SELECT — inlined, not called</span>
+<span class="kw">SELECT</span> <span class="str">"fullName"</span>,
+       member_tenure_years(<span class="str">"joinDate"</span>) <span class="kw">AS</span> tenure_years
+<span class="kw">FROM</span>   <span class="str">"member"</span>;
+
+<span class="cm">-- TABLE SQL Macro: parameterised virtual table</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> active_borrows_for(
+    p_memberID NUMBER
+) <span class="kw">RETURN</span> VARCHAR2 <span class="kw">SQL_MACRO(TABLE)</span>
+<span class="kw">IS BEGIN</span>
+    <span class="kw">RETURN</span> <span class="str">q'[
+        SELECT b."borrowID", r."title", b."borrowDate"
+        FROM   "borrow" b JOIN "resource" r
+               ON b."resourceID" = r."resourceID"
+        WHERE  b."memberID"   = p_memberID
+          AND  b."returnDate" IS NULL
+    ]'</span>;
+<span class="kw">END</span>;
+/
+
+<span class="cm">-- Called like a table — optimizer inlines it</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> active_borrows_for(101);</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 5. VIRTUAL COLUMNS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="virtual">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">📐</span>
+      <div>
+        <h2>Virtual Columns</h2>
+        <p style="margin-top:.4rem">Computed columns — always current, never stored on disk</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">A Virtual Column is defined as an expression involving other columns in the same row. Oracle evaluates the expression on the fly whenever the column is queried. The value is never written to disk — there is zero storage overhead.</p>
+        <p>Virtual columns can be indexed, used in WHERE clauses, and appear in views. They are especially useful for computed business fields that must always reflect the current base data.</p>
+        <div class="why-box">
+          <strong>Our use:</strong> <code>fullName</code> on the <code>member</code> table is a virtual column: <code>TRIM("firstName") || ' ' || TRIM("secondName")</code>. Every query, procedure and view that needs the full name uses this column — there is no risk of firstName and secondName being updated while fullName stays stale.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Add a virtual column to existing table</span>
+<span class="kw">ALTER TABLE</span> <span class="str">"member"</span> <span class="kw">ADD</span> (
+    <span class="str">"fullName"</span> VARCHAR2(62)
+        <span class="kw">GENERATED ALWAYS AS</span>
+        (TRIM(<span class="str">"firstName"</span>) || <span class="str">' '</span> || TRIM(<span class="str">"secondName"</span>))
+        <span class="kw">VIRTUAL</span>
+);
+
+<span class="cm">-- It works like any column but is never stored:</span>
+<span class="kw">SELECT</span> <span class="str">"memberID"</span>, <span class="str">"fullName"</span>, <span class="str">"joinDate"</span>
+<span class="kw">FROM</span>   <span class="str">"member"</span>;
+<span class="cm">-- fullName is computed fresh each time</span>
+
+<span class="cm">-- Can be indexed for fast full-name lookups:</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_member_fullName"</span>
+    <span class="kw">ON</span> <span class="str">"member"</span> (UPPER(<span class="str">"fullName"</span>));</div>
+        <div id="virtual-live" style="margin-top:1rem;font-size:.82rem;color:#8B7355">Loading virtual column data…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 6. INVISIBLE COLUMNS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="invisible">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">👁</span>
+      <div>
+        <h2>Invisible Columns</h2>
+        <p style="margin-top:.4rem">Hidden from <code>SELECT *</code> but fully accessible and indexed by name</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">An Invisible Column is present in the table and fully functional, but it does not appear in <code>SELECT *</code>, <code>%ROWTYPE</code> declarations, or <code>DESCRIBE</code> output. It must be referenced explicitly by name.</p>
+        <p>This is ideal for sensitive fields — like password hashes — that should never accidentally be exposed by a generic query. It also allows columns to be added to a table without breaking existing code that uses <code>SELECT *</code>.</p>
+        <div class="why-box">
+          <strong>Our use:</strong> <code>"pwdHash"</code> on the <code>member</code> table stores the bcrypt-hashed password. Being invisible means it is never accidentally returned by <code>SELECT * FROM "member"</code> — it must be explicitly requested: <code>SELECT "pwdHash" FROM "member"</code>.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Add an invisible column</span>
+<span class="kw">ALTER TABLE</span> <span class="str">"member"</span> <span class="kw">ADD</span> (
+    <span class="str">"pwdHash"</span> VARCHAR2(64) <span class="kw">INVISIBLE</span>
+);
+
+<span class="cm">-- SELECT * will NOT return "pwdHash":</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="str">"member"</span>;
+<span class="cm">-- Result: memberID, firstName, secondName, email... (no pwdHash)</span>
+
+<span class="cm">-- Must be referenced explicitly:</span>
+<span class="kw">SELECT</span> <span class="str">"memberID"</span>, <span class="str">"pwdHash"</span>
+<span class="kw">FROM</span>   <span class="str">"member"</span>
+<span class="kw">WHERE</span>  <span class="str">"email"</span> = <span class="str">'user@example.com'</span>;
+
+<span class="cm">-- Make visible again at any time:</span>
+<span class="cm">-- ALTER TABLE "member" MODIFY "pwdHash" VISIBLE;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 7. PARTITIONED TABLES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="partitioning">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">📊</span>
+      <div>
+        <h2>Interval Range Partitioning</h2>
+        <p style="margin-top:.4rem">Automatic yearly partition creation — older data stays queryable but physically isolated</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">Partitioning splits a large table into smaller physical segments (partitions) while presenting a single logical table to queries. With <strong>INTERVAL partitioning</strong>, Oracle automatically creates new partitions as data arrives — you define only the seed partitions and the interval rule.</p>
+        <div class="why-box">
+          <strong>Our use:</strong> <code>paymentArchive</code> is range-partitioned by <code>paymentDate</code> with a <code>NUMTOYMINTERVAL(1,'YEAR')</code> interval. A query like <code>WHERE paymentDate BETWEEN '2024-01-01' AND '2024-12-31'</code> hits only the 2024 partition — <strong>partition pruning</strong> eliminates all other segments from the scan.
+        </div>
+        <div class="how-box">
+          <strong>Performance benefit:</strong> Year-based revenue reports (which are common in the admin dashboard) execute in milliseconds even as the archive grows to millions of rows, because the optimizer restricts the scan to a single physical partition.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- INTERVAL RANGE partition by year</span>
+<span class="cm">-- New year partitions auto-create on first insert</span>
+<span class="kw">CREATE TABLE</span> <span class="str">"paymentArchive"</span> (
+    <span class="str">"archiveID"</span>   NUMBER <span class="kw">GENERATED BY DEFAULT AS IDENTITY</span>,
+    <span class="str">"memberID"</span>    NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"amount"</span>      NUMBER(10,2)  <span class="kw">NOT NULL</span>,
+    <span class="str">"paymentDate"</span> DATE          <span class="kw">NOT NULL</span>
+)
+<span class="kw">PARTITION BY RANGE</span> (<span class="str">"paymentDate"</span>)
+<span class="kw">INTERVAL</span> (<span class="kw">NUMTOYMINTERVAL</span>(1, <span class="str">'YEAR'</span>)) (
+    <span class="kw">PARTITION</span> pmt_2023
+        <span class="kw">VALUES LESS THAN</span> (<span class="kw">DATE</span> <span class="str">'2024-01-01'</span>),
+    <span class="kw">PARTITION</span> pmt_2024
+        <span class="kw">VALUES LESS THAN</span> (<span class="kw">DATE</span> <span class="str">'2025-01-01'</span>)
+    <span class="cm">-- 2025, 2026... created automatically</span>
+);
+
+<span class="cm">-- Query uses partition pruning automatically:</span>
+<span class="kw">SELECT</span> <span class="kw">SUM</span>(<span class="str">"amount"</span>)
+<span class="kw">FROM</span>   <span class="str">"paymentArchive"</span>
+<span class="kw">WHERE</span>  <span class="str">"paymentDate"</span> <span class="kw">BETWEEN</span> <span class="kw">DATE</span> <span class="str">'2024-01-01'</span>
+                          <span class="kw">AND</span>     <span class="kw">DATE</span> <span class="str">'2024-12-31'</span>;
+<span class="cm">-- Only the pmt_2024 segment is scanned</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 8. PROPERTY GRAPH -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="graph">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🕸</span>
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+          <h2>Property Graph</h2>
+          <span class="feature-num">Oracle 21c</span>
+        </div>
+        <p style="margin-top:.4rem">Native graph model over relational data — members, resources and branches as vertices and edges</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:.75rem">Oracle Property Graphs define a graph schema over existing relational tables. Vertex tables become <em>nodes</em> and edge tables become <em>relationships</em>. The graph is <strong>not a copy</strong> of the data — it is a live graph view over the same rows.</p>
+        <p style="margin-bottom:.75rem">Queries use <code>GRAPH_TABLE()</code> with SQL/PGQ syntax (SQL Property Graph Query) to traverse relationships, find paths, and calculate graph metrics — all within a standard SQL SELECT.</p>
+        <div class="why-box">
+          <strong>Our graph:</strong> Members and Resources are vertices. Borrow events are edges (Borrowed), and the Member→Branch relationship is also an edge (BelongsTo). This lets us answer questions like: "Which members share the same borrowing pattern?" and "Which branch has the most connected members?"
+        </div>
+        <div class="how-box">
+          <strong>Visualisation:</strong> The D3.js network graph on the Admin Dashboard fetches member and resource nodes from the API (<code>/api/graph-data</code>) and borrow edges, then renders them as an interactive force-directed graph. Drag nodes to explore the borrow network.
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Define the Property Graph</span>
+<span class="kw">CREATE OR REPLACE PROPERTY GRAPH</span> <span class="str">"agriGraph"</span>
+    <span class="kw">VERTEX TABLES</span> (
+        <span class="str">"member"</span>
+            <span class="kw">KEY</span> (<span class="str">"memberID"</span>)
+            <span class="kw">LABEL</span> Member
+            <span class="kw">PROPERTIES</span> (<span class="str">"firstName"</span>, <span class="str">"joinDate"</span>),
+        <span class="str">"resource"</span>
+            <span class="kw">KEY</span> (<span class="str">"resourceID"</span>)
+            <span class="kw">LABEL</span> Resource
+            <span class="kw">PROPERTIES</span> (<span class="str">"title"</span>, <span class="str">"type"</span>)
+    )
+    <span class="kw">EDGE TABLES</span> (
+        <span class="str">"borrow"</span>
+            <span class="kw">KEY</span> (<span class="str">"borrowID"</span>)
+            <span class="kw">SOURCE KEY</span> (<span class="str">"memberID"</span>)
+                <span class="kw">REFERENCES</span> <span class="str">"member"</span>
+            <span class="kw">DESTINATION KEY</span> (<span class="str">"resourceID"</span>)
+                <span class="kw">REFERENCES</span> <span class="str">"resource"</span>
+            <span class="kw">LABEL</span> Borrowed
+    );
+
+<span class="cm">-- Query: members who borrowed resources (GRAPH_TABLE)</span>
+<span class="kw">SELECT</span> member_id, first_name, borrow_count
+<span class="kw">FROM GRAPH_TABLE</span> (
+    <span class="str">"agriGraph"</span>
+    <span class="kw">MATCH</span> (m <span class="kw">IS</span> Member) -[b <span class="kw">IS</span> Borrowed]-> (r <span class="kw">IS</span> Resource)
+    <span class="kw">COLUMNS</span> (
+        m.<span class="str">"memberID"</span>  <span class="kw">AS</span> member_id,
+        m.<span class="str">"firstName"</span> <span class="kw">AS</span> first_name,
+        <span class="kw">COUNT</span>(*)     <span class="kw">AS</span> borrow_count
+    )
+)
+<span class="kw">ORDER BY</span> borrow_count <span class="kw">DESC</span>;</div>
+      </div>
+    </div>
+
+    <!-- Mini network graph preview -->
+    <div class="diagram-box mt-3">
+      <p style="color:var(--gold);font-size:.78rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:.75rem">Live Property Graph Preview — Member–Resource Borrow Network</p>
+      <div id="doc-graph" style="min-height:320px;position:relative"></div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 9. INDEXES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="indexes">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🔍</span>
+      <div>
+        <h2>Index Strategy</h2>
+        <p style="margin-top:.4rem">B-tree, composite, function-based, and invisible indexes tuned to our exact query patterns</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div style="margin-bottom:1.25rem">
+          <h3 style="font-size:1rem;margin-bottom:.5rem">B-tree Indexes (standard)</h3>
+          <p style="font-size:.86rem">Applied to every foreign key column (<code>branchID</code>, <code>categoryID</code>, <code>memberID</code>) and the <code>eventDate</code> column on shows. These prevent full table scans on JOIN operations and range queries.</p>
+        </div>
+        <div style="margin-bottom:1.25rem">
+          <h3 style="font-size:1rem;margin-bottom:.5rem">Composite Index</h3>
+          <p style="font-size:.86rem"><code>idx_borrow_active</code> on <code>("memberID", "returnDate")</code> matches the most common borrow query pattern: <em>WHERE memberID = :x AND returnDate IS NULL</em>. The leading column is the high-cardinality filter, the trailing column enables the IS NULL check without a table access.</p>
+        </div>
+        <div style="margin-bottom:1.25rem">
+          <h3 style="font-size:1rem;margin-bottom:.5rem">Function-Based Indexes</h3>
+          <p style="font-size:.86rem"><code>idx_member_email_upper</code> on <code>UPPER("email")</code> supports case-insensitive email lookups in login and search. <code>idx_member_fullName</code> on <code>UPPER(fullName)</code> supports the member search procedure.</p>
+        </div>
+        <div>
+          <h3 style="font-size:1rem;margin-bottom:.5rem">Invisible Index</h3>
+          <p style="font-size:.86rem"><code>idx_payment_type_invis</code> on <code>paymentType</code> is <code>INVISIBLE</code> — maintained by DML but ignored by the optimizer unless hinted. This lets us test whether the index would help a query before committing to making it visible, with zero risk to existing query plans.</p>
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Standard B-tree: foreign key</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_member_branchID"</span>
+    <span class="kw">ON</span> <span class="str">"member"</span> (<span class="str">"branchID"</span>);
+
+<span class="cm">-- Composite: matches (memberID, returnDate IS NULL)</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_borrow_active"</span>
+    <span class="kw">ON</span> <span class="str">"borrow"</span> (<span class="str">"memberID"</span>, <span class="str">"returnDate"</span>);
+
+<span class="cm">-- Function-based: case-insensitive email login</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_member_email_upper"</span>
+    <span class="kw">ON</span> <span class="str">"member"</span> (UPPER(<span class="str">"email"</span>));
+
+<span class="cm">-- Function-based: full-name search</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_member_fullName"</span>
+    <span class="kw">ON</span> <span class="str">"member"</span> (UPPER(<span class="str">"fullName"</span>));
+
+<span class="cm">-- JSON field index: filter announcements by priority</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_announcement_priority"</span>
+    <span class="kw">ON</span> <span class="str">"announcement"</span>
+    (<span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.priority'</span>));
+
+<span class="cm">-- INVISIBLE: test before committing</span>
+<span class="kw">CREATE INDEX</span> <span class="str">"idx_payment_type_invis"</span>
+    <span class="kw">ON</span> <span class="str">"payment"</span> (<span class="str">"paymentType"</span>)
+    <span class="kw">INVISIBLE</span>;
+
+<span class="cm">-- Use invisible index with hint:</span>
+<span class="kw">SELECT</span> <span class="cm">/*+ INDEX("payment" "idx_payment_type_invis") */</span>
+       * <span class="kw">FROM</span> <span class="str">"payment"</span>
+<span class="kw">WHERE</span>  <span class="str">"paymentType"</span> = <span class="str">'Annual Fee'</span>;</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 10. TRIGGERS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="triggers">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">⚡</span>
+      <div>
+        <h2>Triggers</h2>
+        <p style="margin-top:.4rem">Four database-level triggers automating audit, archiving, blockchain writes and stock safety</p>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem">
+      {% for icon, name, timing, purpose, desc in [
+        ('📋','trg_member_audit','AFTER INSERT/UPDATE/DELETE on member','Full audit trail',
+         'Captures every change to the member table — who was changed, by which database user, what the old and new email/status were — into the memberAuditLog table. Cannot be bypassed by the application.'),
+        ('🔗','trg_payment_blockchain','AFTER INSERT on payment','Blockchain ledger feed',
+         'Every new payment row automatically writes an identical record to the paymentAuditLedger blockchain table. Because this trigger is at the database level, no application code — not even a bug — can skip this step.'),
+        ('🧊','trg_borrow_archive','AFTER UPDATE OF returnDate on borrow','Immutable history archive',
+         'When a borrow\'s returnDate is set (resource returned), this trigger copies the completed borrow — with member name and resource title denormalised — into the immutable borrowHistory table. History survives 90 days minimum.'),
+        ('🛡','trg_resource_stock_guard','BEFORE UPDATE on resource','Stock safety net',
+         'Raises ORA-20010 if any statement attempts to set availableCopies below zero. This is a belt-and-suspenders guard on top of the CHECK constraint and the procedure-level availability check.')
+      ] %}
+      <div class="feature-card">
+        <div class="feature-icon">{{ icon }}</div>
+        <div class="feature-tag">{{ timing }}</div>
+        <h3>{{ name }}</h3>
+        <p style="margin-bottom:.5rem;font-size:.84rem"><strong>{{ purpose }}</strong></p>
+        <p style="font-size:.82rem">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="code-block mt-3"><span class="cm">-- Example: audit trigger captures old and new values</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="str">"trg_member_audit"</span>
+<span class="kw">AFTER INSERT OR UPDATE OR DELETE ON</span> <span class="str">"member"</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">IF INSERTING THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="str">"memberAuditLog"</span> (<span class="str">"action"</span>,<span class="str">"memberID"</span>,<span class="str">"newEmail"</span>,<span class="str">"newIsActive"</span>)
+        <span class="kw">VALUES</span> (<span class="str">'INSERT'</span>, :NEW.<span class="str">"memberID"</span>, :NEW.<span class="str">"email"</span>, :NEW.<span class="str">"isActive"</span>);
+    <span class="kw">ELSIF UPDATING THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="str">"memberAuditLog"</span>
+            (<span class="str">"action"</span>,<span class="str">"memberID"</span>,<span class="str">"oldEmail"</span>,<span class="str">"newEmail"</span>,<span class="str">"oldIsActive"</span>,<span class="str">"newIsActive"</span>)
+        <span class="kw">VALUES</span> (<span class="str">'UPDATE'</span>,:NEW.<span class="str">"memberID"</span>,:OLD.<span class="str">"email"</span>,:NEW.<span class="str">"email"</span>,
+                :OLD.<span class="str">"isActive"</span>,:NEW.<span class="str">"isActive"</span>);
+    <span class="kw">ELSIF DELETING THEN</span>
+        <span class="kw">INSERT INTO</span> <span class="str">"memberAuditLog"</span> (<span class="str">"action"</span>,<span class="str">"memberID"</span>,<span class="str">"oldEmail"</span>)
+        <span class="kw">VALUES</span> (<span class="str">'DELETE'</span>, :OLD.<span class="str">"memberID"</span>, :OLD.<span class="str">"email"</span>);
+    <span class="kw">END IF</span>;
+<span class="kw">END</span>;
+/</div>
+    <div id="audit-live" style="margin-top:1rem;font-size:.82rem;color:#8B7355">Loading recent audit entries…</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 11. ROLES & PRIVILEGES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="roles">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🔑</span>
+      <div>
+        <h2>Roles &amp; Least-Privilege Access</h2>
+        <p style="margin-top:.4rem">Three layered roles — readonly → member → admin — each with precisely scoped grants</p>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <p style="margin-bottom:1rem">Oracle Roles group related privileges and can be granted to users or other roles (role inheritance). This allows us to build a privilege hierarchy where each level inherits from the one below while adding its own capabilities.</p>
+
+        <!-- Role diagram using inline SVG -->
+        <div class="diagram-box">
+          <svg viewBox="0 0 480 200" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Sans',sans-serif">
+            <!-- agri_readonly -->
+            <rect x="10" y="80" width="130" height="44" rx="8" fill="rgba(58,107,138,.25)" stroke="#3A6B8A" stroke-width="1.5"/>
+            <text x="75" y="97" text-anchor="middle" fill="#9DC8E8" font-size="10" font-weight="700">agri_readonly</text>
+            <text x="75" y="113" text-anchor="middle" fill="#9DC8E8" font-size="9">SELECT public data</text>
+            <!-- arrow -->
+            <line x1="140" y1="102" x2="172" y2="102" stroke="rgba(200,135,42,.6)" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- agri_member_role -->
+            <rect x="172" y="60" width="136" height="64" rx="8" fill="rgba(45,90,39,.25)" stroke="#2D5A27" stroke-width="1.5"/>
+            <text x="240" y="78" text-anchor="middle" fill="#7AAD72" font-size="10" font-weight="700">agri_member_role</text>
+            <text x="240" y="93" text-anchor="middle" fill="#7AAD72" font-size="9">+ SELECT member/borrow</text>
+            <text x="240" y="107" text-anchor="middle" fill="#7AAD72" font-size="9">+ INSERT borrow/payment</text>
+            <text x="240" y="118" text-anchor="middle" fill="#7AAD72" font-size="9">+ EXECUTE procedures</text>
+            <!-- arrow -->
+            <line x1="308" y1="102" x2="340" y2="102" stroke="rgba(200,135,42,.6)" stroke-width="1.5" marker-end="url(#arr)"/>
+            <!-- agri_admin_role -->
+            <rect x="340" y="40" width="130" height="104" rx="8" fill="rgba(160,56,32,.2)" stroke="#A03820" stroke-width="1.5"/>
+            <text x="405" y="60" text-anchor="middle" fill="#F87A72" font-size="10" font-weight="700">agri_admin_role</text>
+            <text x="405" y="76" text-anchor="middle" fill="#F87A72" font-size="9">+ Full DML all tables</text>
+            <text x="405" y="91" text-anchor="middle" fill="#F87A72" font-size="9">+ Audit log SELECT</text>
+            <text x="405" y="106" text-anchor="middle" fill="#F87A72" font-size="9">+ Blockchain SELECT</text>
+            <text x="405" y="121" text-anchor="middle" fill="#F87A72" font-size="9">+ All procedures</text>
+            <text x="405" y="136" text-anchor="middle" fill="#F87A72" font-size="9">+ DELETE member</text>
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="rgba(200,135,42,.8)"/>
+              </marker>
+            </defs>
+          </svg>
+          <p style="color:var(--straw);font-size:.75rem;text-align:center;margin-top:.5rem">Role inheritance: each arrow means "inherits all privileges from"</p>
+        </div>
+      </div>
+      <div>
+        <div class="code-block"><span class="cm">-- Create the three roles</span>
+<span class="kw">CREATE ROLE</span> agri_readonly;
+<span class="kw">CREATE ROLE</span> agri_member_role;
+<span class="kw">CREATE ROLE</span> agri_admin_role;
+
+<span class="cm">-- agri_readonly: public-facing SELECT only</span>
+<span class="kw">GRANT SELECT ON</span> <span class="str">"branch"</span>    <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"resource"</span>  <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"show"</span>      <span class="kw">TO</span> agri_readonly;
+
+<span class="cm">-- agri_member_role inherits readonly + adds DML</span>
+<span class="kw">GRANT</span> agri_readonly          <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT INSERT ON</span> <span class="str">"borrow"</span>   <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT INSERT ON</span> <span class="str">"payment"</span>  <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT UPDATE</span> (<span class="str">"returnDate"</span>)
+    <span class="kw">ON</span> <span class="str">"borrow"</span>             <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT EXECUTE ON</span> <span class="str">"borrowResource"</span> <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT EXECUTE ON</span> <span class="str">"makePayment"</span>    <span class="kw">TO</span> agri_member_role;
+
+<span class="cm">-- agri_admin_role inherits member + full control</span>
+<span class="kw">GRANT</span> agri_member_role             <span class="kw">TO</span> agri_admin_role;
+<span class="kw">GRANT INSERT, UPDATE, DELETE ON</span>
+    <span class="str">"member"</span>                       <span class="kw">TO</span> agri_admin_role;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"memberAuditLog"</span>   <span class="kw">TO</span> agri_admin_role;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"paymentAuditLedger"</span> <span class="kw">TO</span> agri_admin_role;
+
+<span class="cm">-- Assign to database users:</span>
+<span class="cm">-- GRANT agri_admin_role TO agri_web_admin;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- 12. PROCEDURES -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="doc-section" id="procedures">
+  <div class="container">
+    <div class="feature-header">
+      <span style="font-size:3rem">🗄</span>
+      <div>
+        <h2>Advanced Stored Procedures</h2>
+        <p style="margin-top:.4rem">15 procedures covering analytics, member management, audit and graph queries</p>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Procedure</th><th>Purpose</th><th>Oracle Feature Used</th><th>Used By</th></tr></thead>
+        <tbody>
+          {% for name, purpose, feature, used_by in [
+            ('getDashboardStats','Single-row KPI snapshot (members, revenue, shows, borrows)','Scalar subqueries, NVL aggregation','Admin Dashboard'),
+            ('getMonthlyRevenue','Last 12 months revenue with transaction count','TRUNC+GROUP BY month, ADD_MONTHS','Analytics Charts'),
+            ('getRevenueByPaymentType','Breakdown by type with percentage share','Analytic ratio: SUM/SUM() OVER','Doughnut Chart'),
+            ('getMembersJoinedByMonth','Growth over time with running total','SUM() OVER (ORDER BY) window function','Growth Line Chart'),
+            ('getTopBorrowers','Top N most active borrowers','Virtual fullName column, FETCH FIRST N','Top Borrowers Table'),
+            ('getOverdueBorrows','Borrows unreturned beyond threshold days','TRUNC(SYSDATE - borrowDate), threshold param','Overdue Alert'),
+            ('getMemberActivityReport','Full member profile with all stats and tenure','SQL Macro: member_tenure_years()','Member Dashboard'),
+            ('getBranchReport','Branch-level aggregated performance','Multi-table LEFT JOIN with COUNT DISTINCT','Branch Table'),
+            ('getResourceReport','Library analytics: avg borrow days, concurrency','AVG(returnDate - borrowDate), CASE SUM','Resources Page'),
+            ('getAuditTrail','Paginated audit log from memberAuditLog','LEFT JOIN with FETCH FIRST','Audit Page'),
+            ('getPaymentLedger','Paginated blockchain ledger entries','SELECT from Blockchain Table','Ledger Page'),
+            ('searchMembers','Flexible LIKE search across name/email/phone','UPPER() function-based index usage','Admin Search'),
+            ('addAnnouncement','Insert with native JSON metadata construction','JSON_OBJECT() constructor','Admin Dashboard'),
+            ('toggleMemberActive','Flip isActive without reading the row first','CASE expression in UPDATE SET','Member Management'),
+            ('setMemberPassword','Writes bcrypt hash to invisible column','Invisible column explicit reference','Member Portal')
+          ] %}
+          <tr>
+            <td><code class="mono" style="font-size:.78rem">{{ name }}</code></td>
+            <td style="font-size:.82rem">{{ purpose }}</td>
+            <td><span class="badge badge-gold" style="font-size:.66rem">{{ feature }}</span></td>
+            <td style="font-size:.78rem;color:#8B7355">{{ used_by }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Bottom CTA -->
+<section style="background:var(--soil);padding:4rem 0;text-align:center;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1400&auto=format&fit=crop&q=30');background-size:cover;opacity:.08"></div>
+  <div class="container" style="position:relative">
+    <h2 style="color:var(--cream)">Explore the Live System</h2>
+    <div class="divider"></div>
+    <p style="color:var(--straw);max-width:520px;margin:.5rem auto 2rem">Every feature documented above is active in this running application. Browse the admin dashboard for charts, check the audit page for the blockchain ledger, or register as a member to see the portal.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="{{ url_for('admin.login') }}" class="btn btn-gold">Admin Dashboard</a>
+      <a href="{{ url_for('public.join') }}" class="btn btn-secondary" style="border-color:rgba(232,201,154,.4);color:var(--straw)">Join as Member</a>
+      <a href="{{ url_for('public.index') }}" class="btn btn-secondary" style="border-color:rgba(232,201,154,.4);color:var(--straw)">← Home</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* Load live Oracle feature data and render into the doc page */
+async function loadFeatureData() {
+  try {
+    const data = await fetch('/api/oracle-feature-data').then(r => r.json());
+
+    // Blockchain count
+    const bcEl = document.getElementById('blockchain-live');
+    if (bcEl) bcEl.innerHTML = `<span class="badge badge-rust">🔗 Live</span> <strong>${data.blockchain_count?.cnt ?? 0}</strong> entries in <code>paymentAuditLedger</code> blockchain table`;
+
+    // Immutable count
+    const imEl = document.getElementById('immutable-live');
+    if (imEl) imEl.innerHTML = `<span class="badge badge-sky">🧊 Live</span> <strong>${data.immutable_count?.cnt ?? 0}</strong> rows archived in <code>borrowHistory</code> immutable table`;
+
+    // JSON samples
+    const jsEl = document.getElementById('json-live');
+    if (jsEl && data.json_sample?.length) {
+      jsEl.innerHTML = `<span class="badge badge-gold">📦 Live JSON Samples</span><div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.35rem">${
+        data.json_sample.map(r => `<div style="font-size:.78rem"><strong>${r.title}</strong> — priority: <em>${r.priority||'—'}</em>, author: <em>${r.author||'—'}</em></div>`).join('')
+      }</div>`;
+    } else if (jsEl) { jsEl.innerHTML = `<span class="badge badge-soil">No announcements yet</span>`; }
+
+    // Virtual column
+    const vcEl = document.getElementById('virtual-live');
+    if (vcEl && data.virtual_col?.length) {
+      vcEl.innerHTML = `<span class="badge badge-green">📐 Live Virtual Column Data</span><div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.3rem">${
+        data.virtual_col.map(r => `<div style="font-size:.78rem">ID ${r.memberid}: <strong>${r.fullname}</strong> (joined ${r.joindate ? new Date(r.joindate).toDateString() : '—'})</div>`).join('')
+      }</div>`;
+    } else if (vcEl) { vcEl.innerHTML = `<span class="badge badge-soil">No active members yet</span>`; }
+
+    // Audit entries
+    const auEl = document.getElementById('audit-live');
+    if (auEl && data.audit_recent?.length) {
+      auEl.innerHTML = `<span class="badge badge-gold">⚡ Recent Trigger Events</span><div style="margin-top:.5rem;display:flex;flex-direction:column;gap:.3rem">${
+        data.audit_recent.map(r => `<div style="font-size:.78rem"><span class="badge ${r.action==='INSERT'?'badge-green':r.action==='UPDATE'?'badge-gold':'badge-rust'}">${r.action}</span> Member ID ${r.memberid} — by <em>${r.changedby}</em> at ${r.change_time}</div>`).join('')
+      }</div>`;
+    } else if (auEl) { auEl.innerHTML = `<span class="badge badge-soil">No audit entries yet — perform a member operation to generate one</span>`; }
+
+  } catch(e) {
+    console.warn('Feature data not available:', e.message);
+  }
+}
+
+/* Mini property graph in doc page */
+async function loadDocGraph() {
+  const container = document.getElementById('doc-graph');
+  if (!container || typeof d3 === 'undefined') return;
+  try {
+    const data = await fetch('/api/graph-data').then(r => r.json());
+    if (!data.nodes?.length) { container.innerHTML = '<p style="color:var(--straw);padding:1rem;text-align:center">Add members and resources to see the graph.</p>'; return; }
+    const W = container.clientWidth || 700, H = 300;
+    const svg = d3.select(container).append('svg').attr('width', W).attr('height', H);
+    const colors = ['#C8872A','#2D5A27','#3A6B8A','#A03820','#C9956A','#7AAD72'];
+    const groups = [...new Set(data.nodes.map(d => d.group_name))];
+    const colorOf = g => colors[groups.indexOf(g) % colors.length];
+    const sim = d3.forceSimulation(data.nodes)
+      .force('link', d3.forceLink(data.links).id(d => d.id).distance(55))
+      .force('charge', d3.forceManyBody().strength(-100))
+      .force('center', d3.forceCenter(W/2, H/2))
+      .force('collide', d3.forceCollide(14));
+    const link = svg.append('g').selectAll('line').data(data.links).enter().append('line').attr('stroke','rgba(200,135,42,.3)').attr('stroke-width',1);
+    const node = svg.append('g').selectAll('circle').data(data.nodes).enter().append('circle')
+      .attr('r', d => d.id > 999 ? 9 : 6).attr('fill', d => colorOf(d.group_name)).attr('stroke','#1E1208').attr('stroke-width',1.2)
+      .call(d3.drag().on('start',(e,d)=>{if(!e.active)sim.alphaTarget(.3).restart();d.fx=d.x;d.fy=d.y}).on('drag',(e,d)=>{d.fx=e.x;d.fy=e.y}).on('end',(e,d)=>{if(!e.active)sim.alphaTarget(0);d.fx=null;d.fy=null}));
+    const label = svg.append('g').selectAll('text').data(data.nodes).enter().append('text')
+      .text(d=>(d.label||'').slice(0,12)).attr('font-size','8px').attr('fill','#E8C99A').attr('text-anchor','middle').attr('dy',d=>d.id>999?20:16).style('pointer-events','none');
+    sim.on('tick',()=>{
+      link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+      node.attr('cx',d=>d.x).attr('cy',d=>d.y);
+      label.attr('x',d=>d.x).attr('y',d=>d.y);
+    });
+  } catch(e) { container.innerHTML = '<p style="color:var(--straw);padding:1rem;text-align:center">Graph data unavailable.</p>'; }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadFeatureData();
+  loadDocGraph();
+});
+</script>
+{% endblock %}

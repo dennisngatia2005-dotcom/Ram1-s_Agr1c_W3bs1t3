@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard — AgriSoc Kenya{% endblock %}
+{% block content %}
+
+<div style="background:var(--soil);padding:2.5rem 0;border-bottom:3px solid var(--gold)">
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--gold);color:var(--soil);font-family:var(--font-display);font-size:1.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        {{ session.member_name[0] if session.member_name else '?' }}
+      </div>
+      <div>
+        <h1 style="color:var(--cream);font-size:1.7rem">{{ session.member_name }}</h1>
+        <p style="color:var(--straw);font-size:.85rem">
+          Member #{{ profile.memberid or '?' }} &nbsp;·&nbsp;
+          {{ profile.categoryname or '' }} &nbsp;·&nbsp;
+          {{ profile.branchname or '' }}
+        </p>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:.75rem;flex-wrap:wrap">
+        <a href="{{ url_for('members.logout') }}" class="btn btn-secondary" style="border-color:rgba(232,201,154,.4);color:var(--straw)">Sign Out</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="section-sm">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:2rem;align-items:start">
+
+      <!-- Sidebar: Profile -->
+      <div>
+        <div class="profile-card mb-2">
+          <h3 style="font-size:1rem;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border)">Profile</h3>
+          <div class="profile-field"><label>Full Name</label><span>{{ profile.fullname or (profile.firstname ~ ' ' ~ profile.secondname) }}</span></div>
+          <div class="profile-field"><label>Email</label><span>{{ profile.email }}</span></div>
+          <div class="profile-field"><label>Phone</label><span>{{ profile.phoneno }}</span></div>
+          <div class="profile-field"><label>Branch</label><span>{{ profile.branchname }}</span></div>
+          <div class="profile-field"><label>Category</label><span>{{ profile.categoryname }}</span></div>
+          <div class="profile-field"><label>Member Since</label><span>{{ profile.joindate.strftime('%d %b %Y') if profile.joindate else '—' }}</span></div>
+          {% if profile.tenure_years %}
+          <div class="profile-field"><label>Tenure</label><span>{{ profile.tenure_years }} years <span class="badge badge-gold mono" style="font-size:.62rem">SQL Macro</span></span></div>
+          {% endif %}
+          <div class="profile-field"><label>Total Borrows</label><span>{{ profile.total_borrows or 0 }}</span></div>
+          <div class="profile-field"><label>Total Paid</label><span>KES {{ '{:,.0f}'.format(profile.total_paid or 0) }}</span></div>
+        </div>
+
+        <!-- Set Password -->
+        <div class="card">
+          <div class="card-body" style="padding:1.1rem">
+            <h4 style="font-size:.9rem;margin-bottom:.75rem">Set / Change Password</h4>
+            <form action="{{ url_for('members.set_password') }}" method="POST">
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" name="password" class="form-control" minlength="6" required placeholder="Min. 6 characters">
+              </div>
+              <button type="submit" class="btn btn-sm btn-secondary w-full" style="justify-content:center">Update Password</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main content: tabs -->
+      <div>
+        <div class="tabs-wrapper">
+          <div class="tabs">
+            <button class="tab-btn" data-target="borrows-panel">📚 Current Borrows ({{ borrows|length }})</button>
+            <button class="tab-btn" data-target="payments-panel">💳 Payment History</button>
+            <button class="tab-btn" data-target="pay-panel">+ Make Payment</button>
+          </div>
+
+          <!-- Active Borrows -->
+          <div id="borrows-panel" class="tab-panel">
+            {% if borrows %}
+            <div class="table-wrap mt-2">
+              <table>
+                <thead><tr><th>Resource</th><th>Type</th><th>Borrowed</th><th>Days Held</th><th>Return</th></tr></thead>
+                <tbody>
+                  {% for b in borrows %}
+                  <tr>
+                    <td><strong>{{ b.title }}</strong></td>
+                    <td><span class="resource-badge">{{ b.type }}</span></td>
+                    <td>{{ b.borrowdate.strftime('%d %b %Y') if b.borrowdate else '—' }}</td>
+                    <td>
+                      <span class="badge {% if b.days_held > 14 %}badge-rust{% elif b.days_held > 7 %}badge-gold{% else %}badge-green{% endif %}">
+                        {{ b.days_held }} days
+                      </span>
+                    </td>
+                    <td>
+                      <form action="{{ url_for('members.return_resource', borrow_id=b.borrowid) }}" method="POST" style="display:inline">
+                        <button class="btn btn-xs btn-secondary">Return</button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="empty-state"><span>📖</span>You have no active borrows. <a href="{{ url_for('public.resources') }}">Browse the library →</a></div>
+            {% endif %}
+          </div>
+
+          <!-- Payments -->
+          <div id="payments-panel" class="tab-panel">
+            {% if payments %}
+            <div class="table-wrap mt-2">
+              <table>
+                <thead><tr><th>Type</th><th>Amount (KES)</th><th>Date</th></tr></thead>
+                <tbody>
+                  {% for p in payments %}
+                  <tr>
+                    <td><span class="badge badge-gold">{{ p.paymenttype }}</span></td>
+                    <td><strong>{{ '{:,.0f}'.format(p.amount) }}</strong></td>
+                    <td>{{ p.paymentdate.strftime('%d %b %Y') if p.paymentdate else '—' }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+            <div class="empty-state"><span>💳</span>No payment history yet.</div>
+            {% endif %}
+          </div>
+
+          <!-- Make Payment -->
+          <div id="pay-panel" class="tab-panel">
+            <div class="card mt-2" style="max-width:420px">
+              <div class="card-body">
+                <form action="{{ url_for('members.make_payment') }}" method="POST">
+                  <div class="form-group">
+                    <label class="form-label">Payment Type</label>
+                    <select name="payment_type" class="form-control" required>
+                      <option value="Annual Fee">Annual Fee</option>
+                      <option value="Entry Fee">Entry Fee</option>
+                      <option value="Event Fee">Event Fee</option>
+                      <option value="Donation">Donation</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Amount (KES)</label>
+                    <input type="number" name="amount" min="1" step="0.01" class="form-control" required placeholder="e.g. 1200">
+                  </div>
+                  <div class="alert-warn mb-2" style="font-size:.8rem">
+                    💡 Payments are recorded to Oracle's <strong>Blockchain Table</strong> — immutable and cryptographically audited.
+                  </div>
+                  <button type="submit" class="btn btn-primary w-full" style="justify-content:center">Record Payment</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

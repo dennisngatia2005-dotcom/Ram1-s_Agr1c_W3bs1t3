@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Admin Login — AgriSoc Kenya{% endblock %}
+{% block content %}
+<section class="page-hero">
+  <div class="page-hero-overlay" style="background:rgba(30,18,8,.97)"></div>
+  <div class="container page-hero-inner">
+    <p class="breadcrumb"><a href="{{ url_for('public.index') }}">Home</a> › Admin</p>
+    <h1>Admin Portal</h1>
+    <p>Restricted access — authorised personnel only</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container" style="max-width:420px">
+    <div class="card" style="border-top:4px solid var(--rust)">
+      <div class="card-header">
+        <h3 style="font-family:var(--font-display);font-size:1.1rem;color:var(--soil)">⚙ Admin Sign In</h3>
+      </div>
+      <div class="card-body">
+        <form action="{{ url_for('admin.login') }}" method="POST">
+          <div class="form-group">
+            <label class="form-label">Admin Password</label>
+            <input type="password" name="password" class="form-control" required autofocus placeholder="Enter admin password">
+          </div>
+          <button type="submit" class="btn btn-danger w-full" style="justify-content:center;padding:.72rem">Sign In as Admin</button>
+        </form>
+        <p style="text-align:center;margin-top:1rem;font-size:.82rem;color:#8B7355">
+          <a href="{{ url_for('public.index') }}">← Back to website</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

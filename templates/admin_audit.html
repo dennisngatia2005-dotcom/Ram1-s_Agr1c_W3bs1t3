@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Audit & Ledger — Admin{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem"><div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div></div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}" class="active">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+  <div class="admin-main">
+    <h2 style="font-size:1.6rem;margin-bottom:.5rem">Audit &amp; Immutable Ledger</h2>
+    <p style="font-size:.85rem;margin-bottom:1.5rem;color:#8B7355">Read-only view of Oracle 21c Blockchain Table (payments) and Trigger Audit Log (members)</p>
+
+    <div class="tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn" data-target="ledger-panel">🔗 Payment Blockchain Ledger</button>
+        <button class="tab-btn" data-target="audit-panel">📋 Member Audit Log</button>
+      </div>
+
+      <!-- Blockchain Ledger -->
+      <div id="ledger-panel" class="tab-panel">
+        <div class="alert-info mb-2 mt-2">
+          <strong>Oracle 21c Blockchain Table:</strong> <code>paymentAuditLedger</code> — Rows are cryptographically chained using SHA2_512. No row can be updated or deleted. Every payment is automatically inserted here by the <code>trg_payment_blockchain</code> trigger.
+        </div>
+        {% if ledger %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Ledger ID</th><th>Payment ID</th><th>Member</th><th>Amount (KES)</th><th>Type</th><th>Recorded At</th><th>By</th></tr></thead>
+            <tbody>
+              {% for l in ledger %}
+              <tr>
+                <td class="mono" style="color:#8B7355">{{ l.ledgerid }}</td>
+                <td class="mono">{{ l.paymentid }}</td>
+                <td>{{ l.member_name or '—' }}</td>
+                <td><strong>{{ '{:,.0f}'.format(l.amount) }}</strong></td>
+                <td><span class="badge badge-gold">{{ l.paymenttype }}</span></td>
+                <td style="font-size:.8rem">{{ l.actiontime.strftime('%d %b %Y %H:%M') if l.actiontime else '—' }}</td>
+                <td style="font-size:.78rem;color:#8B7355">{{ l.actionby }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state mt-2"><span>🔗</span>No blockchain ledger entries yet. Make a payment to create the first entry.</div>
+        {% endif %}
+      </div>
+
+      <!-- Member Audit Log -->
+      <div id="audit-panel" class="tab-panel">
+        <div class="alert-warn mb-2 mt-2">
+          <strong>Trigger Audit Log:</strong> <code>memberAuditLog</code> — Every INSERT, UPDATE and DELETE on the <code>member</code> table is automatically captured by the <code>trg_member_audit</code> AFTER trigger. Cannot be disabled from the application layer.
+        </div>
+        {% if audit_log %}
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Audit ID</th><th>Action</th><th>Member ID</th><th>Member</th><th>Old Email</th><th>New Email</th><th>Status Change</th><th>Changed By</th><th>Time</th></tr></thead>
+            <tbody>
+              {% for a in audit_log %}
+              <tr>
+                <td class="mono" style="color:#8B7355">{{ a.auditid }}</td>
+                <td>
+                  {% if a.action == 'INSERT' %}<span class="badge badge-green">INSERT</span>
+                  {% elif a.action == 'UPDATE' %}<span class="badge badge-gold">UPDATE</span>
+                  {% else %}<span class="badge badge-rust">DELETE</span>{% endif %}
+                </td>
+                <td class="mono">{{ a.memberid or '—' }}</td>
+                <td>{{ a.member_name or '—' }}</td>
+                <td style="font-size:.78rem">{{ a.oldemail or '—' }}</td>
+                <td style="font-size:.78rem">{{ a.newemail or '—' }}</td>
+                <td>
+                  {% if a.oldisactive is not none and a.newisactive is not none and a.oldisactive != a.newisactive %}
+                    <span class="badge {% if a.newisactive == 1 %}badge-green{% else %}badge-rust{% endif %}">
+                      {{ 'Activated' if a.newisactive == 1 else 'Deactivated' }}
+                    </span>
+                  {% else %}—{% endif %}
+                </td>
+                <td style="font-size:.78rem;color:#8B7355">{{ a.changedby }}</td>
+                <td style="font-size:.78rem">{{ a.changetime.strftime('%d %b %Y %H:%M') if a.changetime else '—' }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state mt-2"><span>📋</span>No audit entries yet. Member operations will appear here automatically.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

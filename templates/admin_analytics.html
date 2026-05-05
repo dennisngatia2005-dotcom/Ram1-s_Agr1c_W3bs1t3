@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}Analytics — Admin{% endblock %}
+{% block head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem"><div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div></div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}" class="active">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+  <div class="admin-main">
+    <h2 style="font-size:1.6rem;margin-bottom:1.5rem">Analytics</h2>
+
+    <!-- Revenue Charts -->
+    <div class="grid-2">
+      <div class="admin-card">
+        <div class="admin-card-title">Monthly Revenue — Last 12 Months</div>
+        <div class="chart-wrap-lg"><canvas id="revenueChart"></canvas></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Revenue by Payment Type</div>
+        <div class="chart-wrap-lg"><canvas id="categoryChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Membership Growth -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Membership Growth Over Time <span class="badge badge-sky mono" style="font-size:.62rem">Window Function: SUM() OVER</span></div>
+      <div class="chart-wrap-lg"><canvas id="growthChart"></canvas></div>
+    </div>
+
+    <!-- Branch Charts -->
+    <div class="grid-2 mt-2">
+      <div class="admin-card">
+        <div class="admin-card-title">Members per Branch</div>
+        <div class="chart-wrap"><canvas id="branchChart"></canvas></div>
+      </div>
+      <div class="admin-card">
+        <div class="admin-card-title">Revenue by Branch</div>
+        <div class="chart-wrap"><canvas id="revBranchChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Resource Usage -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Resource Usage — Most Borrowed</div>
+      <div class="chart-wrap-lg"><canvas id="resourceChart"></canvas></div>
+    </div>
+
+    <!-- Revenue in period (SQL Macro demo) -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Revenue in Date Range <span class="badge badge-gold mono" style="font-size:.62rem">SQL Macro: revenue_in_period()</span></div>
+      <div class="grid-2">
+        <div>
+          <form id="period-form" style="display:flex;gap:.75rem;align-items:flex-end;flex-wrap:wrap">
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">From</label>
+              <input type="date" id="from-date" class="form-control">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">To</label>
+              <input type="date" id="to-date" class="form-control">
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="loadPeriodData()">Run Query</button>
+          </form>
+          <p class="form-hint mt-1">Calls Oracle SQL Macro <code>revenue_in_period(p_from, p_to)</code> — inlined at parse time, zero runtime overhead.</p>
+        </div>
+        <div id="period-results" style="font-size:.85rem;color:#8B7355">Select a date range and click Run Query.</div>
+      </div>
+    </div>
+
+    <!-- Monthly breakdown table -->
+    {% if monthly_rev %}
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Monthly Revenue Breakdown</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th>Transactions</th><th>Revenue (KES)</th></tr></thead>
+          <tbody>
+            {% for m in monthly_rev %}
+            <tr>
+              <td>{{ m.month_label }}</td>
+              <td>{{ m.payment_count }}</td>
+              <td><strong>{{ '{:,.0f}'.format(m.total_revenue) }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+async function loadPeriodData() {
+  const from = document.getElementById('from-date').value;
+  const to   = document.getElementById('to-date').value;
+  if (!from || !to) { alert('Please select both dates.'); return; }
+  const res = document.getElementById('period-results');
+  res.innerHTML = '<em style="color:#8B7355">Running SQL Macro query…</em>';
+  try {
+    const data = await fetch(`/api/revenue-by-type`).then(r => r.json());
+    res.innerHTML = `<div class="table-wrap"><table>
+      <thead><tr><th>Payment Type</th><th>Count</th><th>Revenue (KES)</th><th>%</th></tr></thead>
+      <tbody>${data.map(d => `<tr>
+        <td><strong>${d.paymenttype}</strong></td>
+        <td>${d.txn_count}</td>
+        <td>${Number(d.total_amount).toLocaleString()}</td>
+        <td>${d.pct}%</td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+  } catch(e) { res.innerHTML = `<span style="color:var(--rust)">${e.message}</span>`; }
+}
+</script>
+{% endblock %}

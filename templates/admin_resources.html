@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Manage Resources — Admin{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem"><div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div></div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}" class="active">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+  <div class="admin-main">
+    <div class="flex-between mb-3">
+      <h2 style="font-size:1.6rem">Resources</h2>
+    </div>
+
+    <!-- Add Resource -->
+    <div class="admin-card mb-3" style="border-top:3px solid var(--leaf)">
+      <div class="admin-card-title">Add New Resource</div>
+      <form action="{{ url_for('admin.add_resource') }}" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" required placeholder="Resource title">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select name="type" class="form-control">
+              <option>Book</option><option>Journal</option>
+              <option>Video</option><option>Seed Catalogue</option><option>Manual</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group" style="max-width:200px">
+          <label class="form-label">Copies</label>
+          <input type="number" name="copies" min="1" value="1" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Resource</button>
+      </form>
+    </div>
+
+    <!-- Resource Table -->
+    <div class="admin-card">
+      <div class="admin-card-title">All Resources</div>
+      {% if resources %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Title</th><th>Type</th><th>Available</th><th>Total Borrows</th><th>Active Borrows</th><th>Avg Days</th><th>Last Borrowed</th></tr>
+          </thead>
+          <tbody>
+            {% for r in resources %}
+            <tr>
+              <td><strong>{{ r.title }}</strong></td>
+              <td><span class="resource-badge">{{ r.type }}</span></td>
+              <td>
+                {% if r.availablecopies > 0 %}
+                  <span class="badge badge-green">{{ r.availablecopies }}</span>
+                {% else %}
+                  <span class="badge badge-rust">0</span>
+                {% endif %}
+              </td>
+              <td>{{ r.total_borrows }}</td>
+              <td>{% if r.currently_borrowed %}<span class="badge badge-gold">{{ r.currently_borrowed }}</span>{% else %}0{% endif %}</td>
+              <td>{{ r.avg_borrow_days or '—' }}</td>
+              <td style="font-size:.8rem">{{ r.last_borrowed.strftime('%d %b %Y') if r.last_borrowed else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state"><span>📚</span>No resources yet.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

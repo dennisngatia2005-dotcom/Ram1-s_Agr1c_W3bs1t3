@@ -1,0 +1,42 @@
+agricSociety_website/
+│
+├── app.py                          # Flask app factory + entry point
+├── config.py                       # DB config, env vars, app settings
+├── requirements.txt                # Python dependencies
+├── .env                            # DB credentials (not committed)
+│
+├── db/
+│   ├── __init__.py                 # Connection pool, helpers (fetchall, execute, call_proc)
+│   ├── oracle_advanced_21c.sql     # NEW: Advanced Oracle 21c features script
+│   └── schema.sql                  # Your existing table definitions (as-is)
+│
+├── routes/
+│   ├── __init__.py
+│   ├── public.py                   # Home, About, Shows, Resources (no login needed)
+│   ├── members.py                  # Member portal (login, dashboard, borrow, pay)
+│   ├── admin.py                    # Admin dashboard, manage members/resources/shows
+│   └── api.py                      # JSON endpoints for charts and AJAX
+│
+├── templates/
+│   ├── base.html                   # Shared layout, nav, footer
+│   ├── index.html                  # Homepage with stats + announcements
+│   ├── about.html                  # About + officials
+│   ├── join.html                   # Public registration form
+│   ├── resources.html              # Library with filter
+│   ├── shows.html                  # Upcoming + past shows
+│   ├── member_login.html           # Member sign-in
+│   ├── member_dashboard.html       # Portal: profile, borrows, payments
+│   ├── admin_login.html            # Admin sign-in
+│   ├── admin_dashboard.html        # Charts, stats, announcements
+│   ├── admin_members.html          # Member management table
+│   └── admin_duality.html          # Oracle features demo page
+│
+└── static/
+    ├── css/
+    │   └── main.css                # Full design system
+    ├── js/
+    │   ├── main.js                 # Tabs, counters, flash dismiss
+    │   ├── charts.js               # Chart.js dashboard charts
+    │   └── admin.js                # Admin-specific interactions
+    └── img/
+        └── (logo, bg assets)

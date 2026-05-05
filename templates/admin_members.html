@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Manage Members — Admin{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem"><div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div></div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}" class="active">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+  <div class="admin-main">
+    <div class="flex-between mb-3">
+      <h2 style="font-size:1.6rem">Members</h2>
+      <a href="{{ url_for('public.join') }}" class="btn btn-primary btn-sm">+ Add Member</a>
+    </div>
+
+    <!-- Search -->
+    <form action="{{ url_for('admin.members') }}" method="GET" style="display:flex;gap:.75rem;margin-bottom:1.5rem">
+      <input type="text" name="q" value="{{ query or '' }}" class="form-control" style="max-width:340px" placeholder="Search name, email or phone…">
+      <button type="submit" class="btn btn-secondary btn-sm">Search</button>
+      {% if query %}<a href="{{ url_for('admin.members') }}" class="btn btn-sm" style="border:1px solid var(--border);background:#fff">Clear</a>{% endif %}
+    </form>
+    <div style="margin-bottom:.75rem">
+      <input type="text" id="live-search" class="form-control" style="max-width:340px" placeholder="Live filter by name…">
+    </div>
+
+    <div class="admin-card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Branch</th><th>Category</th><th>Joined</th><th>Status</th><th>Actions</th></tr>
+          </thead>
+          <tbody>
+            {% for m in members %}
+            <tr class="member-row">
+              <td style="color:#8B7355;font-size:.8rem">{{ m.memberid }}</td>
+              <td><strong><a href="{{ url_for('admin.member_detail', mid=m.memberid) }}" style="color:var(--soil)">{{ m.fullname or (m.firstname ~ ' ' ~ m.secondname) }}</a></strong></td>
+              <td><a href="mailto:{{ m.email }}" style="font-size:.82rem">{{ m.email }}</a></td>
+              <td style="font-size:.82rem">{{ m.phoneno }}</td>
+              <td><span class="badge badge-soil">{{ m.branchname }}</span></td>
+              <td><span class="badge badge-gold">{{ m.categoryname }}</span></td>
+              <td style="font-size:.8rem">{{ m.joindate.strftime('%d %b %Y') if m.joindate else '—' }}</td>
+              <td>
+                {% if m.isactive == 1 %}
+                  <span class="badge badge-green">Active</span>
+                {% else %}
+                  <span class="badge badge-rust">Inactive</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="display:flex;gap:.4rem;flex-wrap:wrap">
+                  <a href="{{ url_for('admin.member_detail', mid=m.memberid) }}" class="btn btn-xs btn-secondary">View</a>
+                  <form action="{{ url_for('admin.toggle_member', mid=m.memberid) }}" method="POST" style="display:inline">
+                    <button class="btn btn-xs btn-secondary">{{ 'Deactivate' if m.isactive==1 else 'Activate' }}</button>
+                  </form>
+                  <form action="{{ url_for('admin.delete_member', mid=m.memberid) }}" method="POST" style="display:inline"
+                        onsubmit="return confirm('Permanently delete this member?')">
+                    <button class="btn btn-xs btn-danger">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9" style="text-align:center;padding:2rem;color:#8B7355">No members found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

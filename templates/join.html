@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Join AgriSoc Kenya{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('https://images.unsplash.com/photo-1499529112087-3cb3b73cec95?w=1400&auto=format&fit=crop&q=50')"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container page-hero-inner">
+    <p class="breadcrumb"><a href="{{ url_for('public.index') }}">Home</a> › Join</p>
+    <h1>Become a Member</h1>
+    <p>Register today and join Kenya's oldest agricultural society</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:3rem;align-items:start">
+
+      <!-- Category Cards -->
+      <div>
+        <h2 style="font-size:1.4rem;margin-bottom:1.5rem">Membership Categories</h2>
+        {% for c in categories %}
+        <div class="card mb-2" style="border-left:4px solid var(--gold)">
+          <div class="card-body" style="padding:1.1rem 1.25rem">
+            <h3 class="card-title" style="font-size:1rem">{{ c.categoryname }}</h3>
+            <div style="display:flex;gap:2rem;margin-top:.5rem;font-size:.84rem">
+              <span>
+                <strong style="color:var(--gold);font-size:1rem">KES {{ '{:,.0f}'.format(c.entryfee or 0) }}</strong>
+                <br><span style="color:#8B7355">Entry Fee</span>
+              </span>
+              <span>
+                <strong style="color:var(--leaf);font-size:1rem">KES {{ '{:,.0f}'.format(c.annualfee or 0) }}</strong>
+                <br><span style="color:#8B7355">Annual Fee</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <div class="alert-info mt-3">
+          <strong>First-time Login:</strong> After registering, your <em>Member ID</em> acts as your PIN. Sign in with your email + Member ID, then set a permanent password.
+        </div>
+      </div>
+
+      <!-- Registration Form -->
+      <div class="card">
+        <div class="card-header">
+          <h3 style="font-family:var(--font-display);font-size:1.2rem;color:var(--soil)">Member Registration</h3>
+          <p style="font-size:.8rem;color:#8B7355;margin-top:.25rem">All fields are required</p>
+        </div>
+        <div class="card-body">
+          <form action="{{ url_for('members.register') }}" method="POST">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" placeholder="e.g. Amina" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="secondName" class="form-control" placeholder="e.g. Wanjiku" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone Number</label>
+              <input type="tel" name="phoneNo" class="form-control" placeholder="+254 700 000 000" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Branch</label>
+                <select name="branchID" class="form-control" required>
+                  <option value="">Select branch…</option>
+                  {% for b in branches %}
+                  <option value="{{ b.branchid }}">{{ b.branchname }} — {{ b.location }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category</label>
+                <select name="categoryID" class="form-control" required>
+                  <option value="">Select category…</option>
+                  {% for c in categories %}
+                  <option value="{{ c.categoryid }}">{{ c.categoryname }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="alert-warn mb-2">
+              ℹ Your <strong>Member ID</strong> will be shown after registration. You'll need it to sign in for the first time.
+            </div>
+            <button type="submit" class="btn btn-primary w-full" style="justify-content:center;padding:.72rem">
+              Register as a Member
+            </button>
+          </form>
+          <p style="text-align:center;margin-top:1rem;font-size:.84rem;color:#8B7355">
+            Already a member? <a href="{{ url_for('members.login') }}">Sign in here</a>
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSoc Kenya — Oracle 21c Technical Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0E0C09;
+  --paper: #F5F0E8;
+  --warm: #EDE7D5;
+  --gold: #C07C2A;
+  --gold-lt: #E09840;
+  --gold-pale: #F5E8D0;
+  --forest: #2A5230;
+  --sage: #4A7C54;
+  --terracotta: #9E3D22;
+  --clay: #C45A35;
+  --sky: #1E4E7A;
+  --mid: #5C4D3A;
+  --muted: #8A7A65;
+  --border: #D8CBAE;
+  --shadow: rgba(14,12,9,.12);
+  --ff-display: 'Playfair Display', Georgia, serif;
+  --ff-body: 'DM Sans', system-ui, sans-serif;
+  --ff-mono: 'DM Mono', 'Courier New', monospace;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: var(--ff-body); background: var(--paper); color: var(--ink); line-height: 1.7; overflow-x: hidden; }
+::selection { background: var(--gold); color: #fff; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--warm); }
+::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+h1 { font-family: var(--ff-display); font-size: clamp(3.5rem,9vw,8rem); line-height: .95; font-style: italic; }
+h2 { font-family: var(--ff-display); font-size: clamp(2rem,5vw,3.2rem); line-height: 1.05; }
+h3 { font-family: var(--ff-display); font-size: clamp(1.4rem,3vw,2rem); font-style: italic; }
+h4 { font-family: var(--ff-body); font-size: 1rem; font-weight: 500; letter-spacing: .02em; }
+p { font-size: .94rem; line-height: 1.85; color: var(--mid); }
+strong { color: var(--ink); font-weight: 500; }
+em { font-family: var(--ff-display); font-style: italic; }
+a { color: var(--gold); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: var(--ff-mono); font-size: .78rem; background: var(--warm); padding: .1rem .4rem; border-radius: 3px; color: var(--terracotta); }
+
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 2rem; }
+.sec { padding: 5rem 0; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.75rem; }
+
+/* ── NAV ── */
+.nav {
+  position: sticky; top: 0; z-index: 900;
+  background: var(--ink); border-bottom: 2px solid var(--gold);
+}
+.nav-inner {
+  max-width: 1080px; margin: 0 auto; padding: 0 2rem;
+  display: flex; align-items: stretch; height: 48px; overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+.nav a {
+  font-family: var(--ff-mono); font-size: .68rem; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase; color: rgba(255,255,255,.45);
+  padding: 0 .9rem; white-space: nowrap; display: flex; align-items: center;
+  border-right: 1px solid rgba(255,255,255,.06); text-decoration: none;
+  transition: color .15s, background .15s;
+}
+.nav a:hover { color: var(--gold-lt); background: rgba(192,124,42,.1); text-decoration: none; }
+.nav a.active { color: var(--gold); background: rgba(192,124,42,.12); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh; background: var(--ink);
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding-bottom: 5rem; position: relative; overflow: hidden;
+}
+.hero-photo {
+  position: absolute; inset: 0;
+  background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1800&q=40&auto=format&fit=crop') center/cover;
+  opacity: .15;
+  animation: zoom 40s ease-in-out infinite alternate;
+}
+@keyframes zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
+.hero-vignette {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--ink) 0%, rgba(14,12,9,.75) 45%, rgba(14,12,9,.35) 100%);
+}
+.hero-rule {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.hero-inner { position: relative; max-width: 1080px; margin: 0 auto; padding: 0 2rem; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-family: var(--ff-mono); font-size: .65rem; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--gold);
+  border: 1px solid rgba(192,124,42,.35); padding: .3rem .8rem; border-radius: 2px;
+  margin-bottom: 1.5rem;
+  animation: up .8s ease both;
+}
+.hero h1 {
+  color: #fff; margin-bottom: 1.25rem;
+  animation: up .8s .12s ease both;
+}
+.hero h1 span { color: var(--gold); }
+.hero-sub {
+  font-family: var(--ff-display); font-style: italic; font-size: 1.1rem;
+  color: rgba(255,255,255,.6); max-width: 580px; line-height: 1.7;
+  animation: up .8s .24s ease both;
+}
+.hero-meta {
+  display: flex; gap: 0; margin-top: 3rem; padding-top: 2rem;
+  border-top: 1px solid rgba(255,255,255,.1); flex-wrap: wrap;
+  animation: up .8s .36s ease both;
+}
+.hero-meta-item {
+  padding: .5rem 1.5rem .5rem 0; margin-right: 1.5rem;
+  border-right: 1px solid rgba(255,255,255,.1);
+}
+.hero-meta-item:last-child { border-right: none; }
+.hero-meta-item label { font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.3); display: block; margin-bottom: .2rem; }
+.hero-meta-item span { font-family: var(--ff-mono); font-size: .82rem; color: var(--gold-lt); }
+
+@keyframes up { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+/* ── CHAPTER HEADERS ── */
+.ch {
+  background: var(--ink); padding: 3.5rem 0 3rem;
+  border-bottom: 3px solid var(--gold); position: relative; overflow: hidden;
+}
+.ch::after {
+  content: attr(data-num);
+  position: absolute; right: 2rem; top: 50%; transform: translateY(-50%);
+  font-family: var(--ff-display); font-size: 9rem; color: rgba(255,255,255,.03);
+  font-weight: 900; line-height: 1; pointer-events: none; user-select: none;
+}
+.ch-inner { max-width: 1080px; margin: 0 auto; padding: 0 2rem; }
+.ch-num { font-family: var(--ff-mono); font-size: .62rem; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin-bottom: .4rem; }
+.ch h2 { color: #fff; }
+.ch p { color: rgba(255,255,255,.5); font-family: var(--ff-display); font-style: italic; margin-top: .4rem; font-size: .95rem; }
+
+/* ── CONTENT BANDS ── */
+.band { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+.band-warm { background: var(--warm); }
+.band-gold-pale { background: var(--gold-pale); }
+
+/* ── STATS ── */
+.stats { display: flex; gap: 1rem; flex-wrap: wrap; margin: 2rem 0; }
+.stat {
+  background: var(--ink); color: #fff; border-radius: 8px;
+  padding: .9rem 1.4rem; flex: 1; min-width: 110px; text-align: center;
+}
+.stat .n { font-family: var(--ff-display); font-size: 2.4rem; color: var(--gold); line-height: 1; display: block; }
+.stat .l { font-family: var(--ff-mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); margin-top: .25rem; display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: 10px; padding: 1.6rem;
+  box-shadow: 0 2px 16px var(--shadow);
+}
+.card-g  { border-top: 4px solid var(--forest); }
+.card-au { border-top: 4px solid var(--gold); }
+.card-r  { border-top: 4px solid var(--terracotta); }
+.card-b  { border-top: 4px solid var(--sky); }
+.card-icon { font-size: 1.5rem; margin-bottom: .75rem; }
+.card h4 { font-size: .95rem; margin-bottom: .5rem; }
+.card p  { font-size: .84rem; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block; font-family: var(--ff-mono); font-size: .62rem;
+  font-weight: 500; letter-spacing: .06em; text-transform: uppercase;
+  padding: .2rem .55rem; border-radius: 3px;
+}
+.b-gold  { background: rgba(192,124,42,.12); color: var(--gold); border: 1px solid rgba(192,124,42,.3); }
+.b-green { background: rgba(42,82,48,.1);   color: var(--forest); border: 1px solid rgba(42,82,48,.25); }
+.b-rust  { background: rgba(158,61,34,.1);  color: var(--terracotta); border: 1px solid rgba(158,61,34,.25); }
+.b-sky   { background: rgba(30,78,122,.1);  color: var(--sky); border: 1px solid rgba(30,78,122,.25); }
+.b-solid-gold  { background: var(--gold); color: #fff; }
+.b-solid-green { background: var(--forest); color: #fff; }
+.b-solid-rust  { background: var(--terracotta); color: #fff; }
+
+/* ── CODE BLOCKS ── */
+.codeblock {
+  background: #0D1117; border-radius: 8px;
+  border: 1px solid rgba(192,124,42,.18); overflow: hidden;
+  font-family: var(--ff-mono); font-size: .76rem; line-height: 1.8;
+}
+.codeblock-header {
+  background: #161B22; padding: .55rem 1rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.code-dots { display: flex; gap: .35rem; }
+.code-dots span { width: 9px; height: 9px; border-radius: 50%; }
+.cd-r { background: #FF5F57; } .cd-y { background: #FEBC2E; } .cd-g { background: #28C840; }
+.code-fname { font-size: .64rem; color: rgba(255,255,255,.3); letter-spacing: .04em; }
+.codeblock pre { padding: 1.2rem 1.4rem; overflow-x: auto; margin: 0; }
+.kw  { color: #FF7B72; }
+.fn  { color: #D2A8FF; }
+.str { color: #A5D6FF; }
+.cm  { color: #8B949E; font-style: italic; }
+.num { color: #79C0FF; }
+.cls { color: #FFA657; }
+.op  { color: #FF7B72; }
+
+/* ── CALLOUTS ── */
+.note {
+  border-radius: 6px; padding: 1rem 1.25rem;
+  margin: 1.25rem 0; font-size: .87rem; line-height: 1.75;
+}
+.note-green { background: rgba(42,82,48,.07); border-left: 3px solid var(--forest); }
+.note-green strong { color: var(--forest); }
+.note-gold  { background: rgba(192,124,42,.07); border-left: 3px solid var(--gold); }
+.note-gold  strong { color: var(--gold); }
+.note-rust  { background: rgba(158,61,34,.07); border-left: 3px solid var(--terracotta); }
+.note-rust  strong { color: var(--terracotta); }
+
+.funny {
+  background: var(--warm); border: 1px dashed var(--border);
+  border-radius: 8px; padding: 1rem 1.25rem 1rem 2.5rem;
+  margin: 1.25rem 0; font-family: var(--ff-display);
+  font-style: italic; font-size: .92rem; color: var(--ink);
+  position: relative;
+}
+.funny::before {
+  content: '😄'; position: absolute; left: .75rem; top: 1rem;
+  font-size: 1rem; font-style: normal;
+}
+.funny strong { font-style: normal; font-family: var(--ff-body); font-weight: 500; color: var(--ink); }
+
+/* ── TOC ── */
+.toc { background: var(--warm); border: 1px solid var(--border); border-radius: 10px; padding: 2rem; }
+.toc h4 { font-family: var(--ff-display); font-size: 1.5rem; margin-bottom: 1.25rem; font-style: italic; }
+.toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem .5rem; }
+.toc li { font-size: .84rem; list-style: none; display: flex; align-items: baseline; gap: .5rem; }
+.toc li::before { content: '—'; color: var(--gold); font-size: .7rem; flex-shrink: 0; }
+.toc a { color: var(--mid); }
+.toc a:hover { color: var(--gold); text-decoration: none; }
+
+/* ── TABLE ── */
+.dtable { width: 100%; border-collapse: collapse; font-size: .84rem; }
+.dtable thead th {
+  background: var(--ink); color: #fff; padding: .65rem 1rem;
+  text-align: left; font-family: var(--ff-mono); font-size: .66rem;
+  letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+}
+.dtable tbody td { padding: .6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+.dtable tbody tr:last-child td { border-bottom: none; }
+.dtable tbody tr:hover { background: var(--warm); }
+
+/* ── PULL QUOTE ── */
+.pq {
+  border-left: 3px solid var(--gold); padding: 1rem 1.5rem;
+  margin: 2rem 0; background: var(--gold-pale); border-radius: 0 8px 8px 0;
+}
+.pq p { font-family: var(--ff-display); font-style: italic; font-size: 1.05rem; color: var(--ink); line-height: 1.65; }
+.pq cite { font-size: .74rem; color: var(--muted); font-style: normal; font-family: var(--ff-mono); margin-top: .5rem; display: block; }
+
+/* ── FLOW ── */
+.flow { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; margin: 1.25rem 0; }
+.flow-box { background: var(--ink); color: var(--gold-lt); font-family: var(--ff-mono); font-size: .7rem; padding: .3rem .75rem; border-radius: 4px; white-space: nowrap; }
+.flow-arrow { color: var(--gold); font-size: 1rem; }
+
+/* ── ARCH DIAGRAM ── */
+.arch { background: var(--ink); border-radius: 10px; padding: 2rem; border: 1px solid rgba(192,124,42,.2); overflow-x: auto; }
+.arch svg { display: block; margin: 0 auto; }
+
+/* ── COMPARISON TABLE ── */
+.compare { width: 100%; border-collapse: collapse; font-size: .84rem; border-radius: 8px; overflow: hidden; }
+.compare thead th { background: var(--ink); color: #fff; padding: .65rem 1rem; font-family: var(--ff-mono); font-size: .66rem; letter-spacing: .06em; text-transform: uppercase; text-align: left; }
+.compare tbody td { padding: .6rem 1rem; border-bottom: 1px solid var(--border); }
+.compare tbody tr:last-child td { border-bottom: none; }
+.compare tbody tr:nth-child(even) { background: var(--warm); }
+
+/* ── STEP FLOW ── */
+.steps { display: flex; flex-direction: column; gap: .6rem; }
+.step { display: flex; gap: 1rem; align-items: flex-start; }
+.step-num {
+  font-family: var(--ff-mono); font-size: .68rem; font-weight: 500;
+  padding: .25rem .6rem; border-radius: 4px; white-space: nowrap;
+  flex-shrink: 0; margin-top: .15rem;
+}
+.step-num-g  { background: var(--forest); color: #fff; }
+.step-num-au { background: var(--gold); color: #fff; }
+.step-num-r  { background: var(--terracotta); color: #fff; }
+.step-content strong { font-size: .88rem; display: block; margin-bottom: .2rem; }
+.step-content p { font-size: .82rem; margin: 0; }
+
+/* ── REVEAL ── */
+.rv { opacity: 0; transform: translateY(24px); transition: opacity .5s ease, transform .5s ease; }
+.rv.in { opacity: 1; transform: none; }
+
+/* ── DIVIDER ── */
+.div-gold { height: 2px; background: linear-gradient(to right, var(--gold), transparent); margin: 2rem 0; border: none; }
+
+/* ── FOOTER ── */
+footer { background: var(--ink); padding: 3rem 0; text-align: center; border-top: 3px solid var(--gold); }
+footer p { color: rgba(255,255,255,.35); font-size: .8rem; line-height: 2; }
+footer strong { color: var(--gold-lt); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+  .toc-grid { grid-template-columns: 1fr; }
+  .hero-meta { flex-direction: column; gap: .5rem; }
+  .hero-meta-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: .5rem; }
+  .ch::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-photo"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-rule"></div>
+  <div class="hero-inner">
+    <div class="hero-tag">Technical Documentation &nbsp;·&nbsp; v1.0 &nbsp;·&nbsp; Oracle 21c &nbsp;·&nbsp; Flask 3</div>
+    <h1>AgriSoc<br><span>Kenya</span></h1>
+    <p class="hero-sub">
+      The complete technical guide to a farming society web app that secretly runs
+      on one of Oracle's most powerful database editions. The farmers don't know.
+      The blockchain table does.
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><label>Database</label><span>Oracle 21c (XE / Free)</span></div>
+      <div class="hero-meta-item"><label>Backend</label><span>Python 3.12 + Flask 3.0</span></div>
+      <div class="hero-meta-item"><label>Driver</label><span>python-oracledb 2.x</span></div>
+      <div class="hero-meta-item"><label>Frontend</label><span>Jinja2 + AJAX</span></div>
+      <div class="hero-meta-item"><label>Charts</label><span>Chart.js 4 + D3.js 7</span></div>
+      <div class="hero-meta-item"><label>Auth</label><span>bcrypt + Flask Sessions</span></div>
+      <div class="hero-meta-item"><label>Triggers</label><span>4 database triggers</span></div>
+      <div class="hero-meta-item"><label>Stored Procs</label><span>15 procedures</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#overview">Overview</a>
+    <a href="#structure">Structure</a>
+    <a href="#schema">Schema</a>
+    <a href="#flask">Flask</a>
+    <a href="#routes">Routes</a>
+    <a href="#blockchain">Blockchain</a>
+    <a href="#immutable">Immutable</a>
+    <a href="#json">JSON Type</a>
+    <a href="#macros">SQL Macros</a>
+    <a href="#virtual">Virtual Cols</a>
+    <a href="#indexes">Indexes</a>
+    <a href="#triggers">Triggers</a>
+    <a href="#roles">Roles</a>
+    <a href="#graph">Prop Graph</a>
+    <a href="#charts">Charts</a>
+    <a href="#flows">End-to-End</a>
+  </div>
+</nav>
+
+
+<!-- ═══════════ OVERVIEW ═══════════ -->
+<section class="sec" id="overview">
+  <div class="wrap">
+
+    <div class="rv">
+      <p style="font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Section 00</p>
+      <h2 style="margin-bottom:1.25rem">What You Are About to Read</h2>
+      <p style="max-width:700px;margin-bottom:2rem">
+        This document covers the entire AgriSoc Kenya project — from the moment a farmer types their email
+        into a registration form, all the way down to the Oracle blockchain table that permanently records
+        their membership fee in a cryptographically-chained ledger that not even the database administrator
+        can alter. We will explain every piece, how it talks to every other piece, and why certain design
+        decisions were made at 2am when the alternative was sleeping.
+      </p>
+      <div class="toc">
+        <h4>Contents</h4>
+        <ul class="toc-grid">
+          <li><a href="#overview">Project Overview &amp; Goals</a></li>
+          <li><a href="#blockchain">Oracle 21c: Blockchain Tables</a></li>
+          <li><a href="#structure">Project File Structure</a></li>
+          <li><a href="#immutable">Oracle 21c: Immutable Tables</a></li>
+          <li><a href="#schema">Database Schema</a></li>
+          <li><a href="#json">Oracle 21c: Native JSON Type</a></li>
+          <li><a href="#flask">Flask Architecture</a></li>
+          <li><a href="#macros">Oracle 21c: SQL Macros</a></li>
+          <li><a href="#routes">Routes &amp; Blueprints</a></li>
+          <li><a href="#virtual">Virtual &amp; Invisible Columns</a></li>
+          <li><a href="#triggers">All 4 Database Triggers</a></li>
+          <li><a href="#indexes">Index Strategy</a></li>
+          <li><a href="#roles">Roles &amp; Least-Privilege</a></li>
+          <li><a href="#graph">Property Graph</a></li>
+          <li><a href="#charts">Charts &amp; AJAX Pipeline</a></li>
+          <li><a href="#flows">How Everything Connects</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rv" style="margin-top:2rem">
+      <div class="funny">
+        <strong>A note on tone:</strong> This documentation is thorough but not boring.
+        Oracle 21c has genuinely remarkable features and we are going to explain them properly —
+        and occasionally point out the parts where Oracle clearly had a very specific enterprise
+        use-case in mind and we shoe-horned it into a Kenyan farming society website anyway.
+        It worked. Mostly. The blockchain table definitely works. The farmers' annual fees
+        are now more tamper-proof than most national currencies.
+      </div>
+    </div>
+
+    <div class="rv stats">
+      <div class="stat"><span class="n">4</span><span class="l">Flask Blueprints</span></div>
+      <div class="stat"><span class="n">15</span><span class="l">Stored Procedures</span></div>
+      <div class="stat"><span class="n">4</span><span class="l">Triggers</span></div>
+      <div class="stat"><span class="n">9</span><span class="l">Indexes</span></div>
+      <div class="stat"><span class="n">10</span><span class="l">Oracle 21c Features</span></div>
+      <div class="stat"><span class="n">3</span><span class="l">DB Roles</span></div>
+      <div class="stat"><span class="n">6</span><span class="l">Charts &amp; Graphs</span></div>
+      <div class="stat"><span class="n">∞</span><span class="l">Sleepless Nights</span></div>
+    </div>
+
+    <div class="rv" style="margin-top:3rem">
+      <h3 style="margin-bottom:1.25rem">What is AgriSoc Kenya?</h3>
+      <p style="max-width:750px;margin-bottom:1rem">
+        The Agricultural Society of Kenya is a (convincingly real) membership organisation serving crop farmers,
+        livestock keepers, agri-businesses and students across four branches: Nairobi Central, Rift Valley,
+        Coast and Western Kenya. Members can join, borrow library resources, make payments, attend shows,
+        and read announcements. Admins get a full analytics dashboard, an audit trail, and enough charts
+        to make a data analyst weep with joy.
+      </p>
+      <p style="max-width:750px;margin-bottom:2rem">
+        The <strong>actual goal</strong> is to demonstrate deep, production-quality Oracle 21c knowledge.
+        The farming society is the stage. Oracle 21c is the show.
+      </p>
+      <div class="grid3">
+        <div class="card card-g">
+          <div class="card-icon">🌾</div>
+          <h4>Public Website</h4>
+          <p>Homepage, resource library, shows calendar, about page and member registration. Open to everyone — no login required.</p>
+        </div>
+        <div class="card card-au">
+          <div class="card-icon">👤</div>
+          <h4>Member Portal</h4>
+          <p>Dashboard showing borrow history, payment history, profile with tenure calculated by a SQL Macro, and password management.</p>
+        </div>
+        <div class="card card-r">
+          <div class="card-icon">⚙️</div>
+          <h4>Admin Dashboard</h4>
+          <p>Full analytics, member management, immutable audit ledger, blockchain payment history, and six charts including a live D3 network graph.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ FILE STRUCTURE ═══════════ -->
+<div class="ch" id="structure" data-num="01">
+  <div class="ch-inner">
+    <div class="ch-num">Section 01</div>
+    <h2>Project File Structure</h2>
+    <p>Every file, what it does, and why it exists</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">agricSociety_website/</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">├── app.py                  # Entry point + blueprint registration</span>
+<span class="cm">├── config.py               # DB credentials, secret key, admin password</span>
+<span class="cm">├── requirements.txt        # flask, python-oracledb, bcrypt, dotenv</span>
+<span class="cm">├── .env                    # Local secrets (NOT committed to git 🙏)</span>
+<span style="color:#CDD9E5">│</span>
+<span class="cm">├── db/</span>
+<span class="cm">│   ├── __init__.py         # Connection pool + fetchall/execute helpers</span>
+<span class="cm">│   └── oracle_advanced_21c.sql  # ← The entire Oracle 21c showcase</span>
+<span style="color:#CDD9E5">│</span>
+<span class="cm">├── routes/</span>
+<span class="cm">│   ├── __init__.py</span>
+<span class="cm">│   ├── public.py           # Home, About, Resources, Shows, Join</span>
+<span class="cm">│   ├── members.py          # Login, Dashboard, Borrow, Return, Pay</span>
+<span class="cm">│   ├── admin.py            # Admin dashboard, analytics, audit log</span>
+<span class="cm">│   └── api.py              # JSON endpoints consumed by charts/graphs</span>
+<span style="color:#CDD9E5">│</span>
+<span class="cm">├── templates/</span>
+<span class="cm">│   ├── base.html           # Shared layout: nav, footer, flash msgs</span>
+<span class="cm">│   ├── index.html          # Public homepage</span>
+<span class="cm">│   ├── join.html           # Registration form</span>
+<span class="cm">│   ├── resources.html      # Library with type filter</span>
+<span class="cm">│   ├── shows.html          # Shows calendar (tabbed by branch)</span>
+<span class="cm">│   ├── member_dashboard.html  # Borrows, payments, profile</span>
+<span class="cm">│   ├── admin_dashboard.html   # KPIs + all Chart.js + D3 graph</span>
+<span class="cm">│   ├── admin_audit.html    # Blockchain ledger + audit log viewer</span>
+<span class="cm">│   └── ...                 # + 6 more templates</span>
+<span style="color:#CDD9E5">│</span>
+<span class="cm">└── static/</span>
+<span class="cm">    ├── css/main.css        # Full design system (~400 lines)</span>
+<span class="cm">    ├── js/main.js          # Tabs, counters, live search, filters</span>
+<span class="cm">    └── js/charts.js        # Chart.js configs + D3 network graph</span>
+          </pre>
+        </div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:1rem">Why this structure?</h3>
+        <p style="margin-bottom:1rem">
+          Flask's <strong>Application Factory pattern</strong> (<code>create_app()</code> in <code>app.py</code>)
+          is the recommended approach for anything bigger than a single-file script. It separates configuration
+          from code and makes the app easier to test. Blueprints split routes into logical groups — changes to
+          admin logic never touch member logic.
+        </p>
+        <p style="margin-bottom:1.25rem">
+          The <code>db/</code> module is deliberately separate from routes. The Oracle connection pool
+          is created once at startup and shared across all requests. Oracle connections are expensive to
+          open — using a pool means we open 2–10 connections total, not one per HTTP request.
+        </p>
+
+        <div class="funny">
+          The <code>.env</code> file contains the database password. It is explicitly listed in
+          <code>.gitignore</code>. We mention this because <em>someone, somewhere</em> has committed
+          a production database password to a public GitHub repo, watched their AWS bill hit
+          $4,000 in six hours, and written a very humbling Medium article about it.
+          We are not that person. We have read that article twice.
+        </div>
+
+        <h4 style="margin-top:1.5rem;margin-bottom:.75rem">The db/ Helper Pattern</h4>
+        <p style="font-size:.87rem;margin-bottom:.75rem">Every route uses one of five helpers from <code>db/__init__.py</code>:</p>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">db/__init__.py — helpers</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="fn">fetchall</span>(sql, params)    <span class="cm"># → list of dicts</span>
+<span class="fn">fetchone</span>(sql, params)    <span class="cm"># → single dict or None</span>
+<span class="fn">call_proc</span>(name, params)  <span class="cm"># → calls SYS_REFCURSOR proc</span>
+<span class="fn">execute</span>(sql, params)     <span class="cm"># → DML with auto-commit</span>
+<span class="fn">get_conn</span>()               <span class="cm"># → raw conn for OUT params</span>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ SCHEMA ═══════════ -->
+<div class="ch" id="schema" data-num="02">
+  <div class="ch-inner">
+    <div class="ch-num">Section 02</div>
+    <h2>Database Schema</h2>
+    <p>The core tables, four special Oracle 21c tables, and how they relate</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="rv">
+      <h3 style="margin-bottom:1.5rem">Core Tables &amp; Relationships</h3>
+      <div class="arch">
+        <svg viewBox="0 0 920 500" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Mono',monospace;max-width:920px;width:100%">
+          <!-- branch -->
+          <rect x="20" y="40" width="155" height="100" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <rect x="20" y="40" width="155" height="24" rx="5" fill="#C07C2A"/>
+          <rect x="20" y="58" width="155" height="6" fill="#C07C2A"/>
+          <text x="97" y="57" text-anchor="middle" fill="#0E0C09" font-size="10.5" font-weight="700">branch</text>
+          <text x="30" y="82" fill="#79C0FF" font-size="8.5">PK  branchID</text>
+          <text x="30" y="96" fill="#CDD9E5" font-size="8.5">    branchName</text>
+          <text x="30" y="110" fill="#CDD9E5" font-size="8.5">    location, isActive</text>
+          <text x="30" y="130" fill="#8B949E" font-size="7.5">    CHECK isActive IN (0,1)</text>
+
+          <!-- category -->
+          <rect x="20" y="185" width="155" height="115" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <rect x="20" y="185" width="155" height="24" rx="5" fill="#C07C2A"/>
+          <rect x="20" y="203" width="155" height="6" fill="#C07C2A"/>
+          <text x="97" y="202" text-anchor="middle" fill="#0E0C09" font-size="10.5" font-weight="700">category</text>
+          <text x="30" y="228" fill="#79C0FF" font-size="8.5">PK  categoryID</text>
+          <text x="30" y="242" fill="#CDD9E5" font-size="8.5">    categoryName</text>
+          <text x="30" y="256" fill="#CDD9E5" font-size="8.5">    entryFee, annualFee</text>
+          <text x="30" y="270" fill="#CDD9E5" font-size="8.5">    memberType</text>
+          <text x="30" y="290" fill="#8B949E" font-size="7.5">    CHECK fees >= 0</text>
+
+          <!-- member (central) -->
+          <rect x="285" y="130" width="185" height="185" rx="5" fill="#161B22" stroke="#2A5230" stroke-width="2.5"/>
+          <rect x="285" y="130" width="185" height="24" rx="5" fill="#2A5230"/>
+          <rect x="285" y="148" width="185" height="6" fill="#2A5230"/>
+          <text x="377" y="147" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">member ★</text>
+          <text x="295" y="172" fill="#79C0FF" font-size="8.5">PK  memberID</text>
+          <text x="295" y="186" fill="#CDD9E5" font-size="8.5">    firstName, secondName</text>
+          <text x="295" y="200" fill="#A5D6FF" font-size="8.5">    email UNIQUE</text>
+          <text x="295" y="214" fill="#A5D6FF" font-size="8.5">    phoneNo UNIQUE</text>
+          <text x="295" y="228" fill="#FFA657" font-size="8.5">FK  branchID, categoryID</text>
+          <text x="295" y="242" fill="#D2A8FF" font-size="8.5">    fullName ← VIRTUAL</text>
+          <text x="295" y="256" fill="#D2A8FF" font-size="8.5">    pwdHash ← INVISIBLE</text>
+          <text x="295" y="270" fill="#CDD9E5" font-size="8.5">    joinDate DEFAULT SYSDATE</text>
+          <text x="295" y="284" fill="#8B949E" font-size="7.5">    isActive DEFAULT 1</text>
+          <text x="295" y="298" fill="#8B949E" font-size="7.5">    CHECK isActive IN (0,1)</text>
+
+          <!-- payment -->
+          <rect x="580" y="40" width="155" height="120" rx="5" fill="#161B22" stroke="#9E3D22" stroke-width="1.5"/>
+          <rect x="580" y="40" width="155" height="24" rx="5" fill="#9E3D22"/>
+          <rect x="580" y="58" width="155" height="6" fill="#9E3D22"/>
+          <text x="657" y="57" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">payment</text>
+          <text x="590" y="82" fill="#79C0FF" font-size="8.5">PK  paymentID</text>
+          <text x="590" y="96" fill="#FFA657" font-size="8.5">FK  memberID</text>
+          <text x="590" y="110" fill="#CDD9E5" font-size="8.5">    amount NUMBER(10,2)</text>
+          <text x="590" y="124" fill="#CDD9E5" font-size="8.5">    paymentType, paymentDate</text>
+          <text x="590" y="146" fill="#8B949E" font-size="7.5">    → feeds blockchain trigger</text>
+
+          <!-- borrow -->
+          <rect x="580" y="205" width="155" height="130" rx="5" fill="#161B22" stroke="#1E4E7A" stroke-width="1.5"/>
+          <rect x="580" y="205" width="155" height="24" rx="5" fill="#1E4E7A"/>
+          <rect x="580" y="223" width="155" height="6" fill="#1E4E7A"/>
+          <text x="657" y="222" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">borrow</text>
+          <text x="590" y="246" fill="#79C0FF" font-size="8.5">PK  borrowID</text>
+          <text x="590" y="260" fill="#FFA657" font-size="8.5">FK  memberID (CASCADE DEL)</text>
+          <text x="590" y="274" fill="#FFA657" font-size="8.5">FK  resourceID</text>
+          <text x="590" y="288" fill="#CDD9E5" font-size="8.5">    borrowDate, returnDate</text>
+          <text x="590" y="302" fill="#CDD9E5" font-size="8.5">    status VARCHAR2(20)</text>
+          <text x="590" y="322" fill="#8B949E" font-size="7.5">    → feeds immutable trigger</text>
+
+          <!-- resource -->
+          <rect x="760" y="205" width="145" height="110" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <rect x="760" y="205" width="145" height="24" rx="5" fill="#C07C2A"/>
+          <rect x="760" y="223" width="145" height="6" fill="#C07C2A"/>
+          <text x="832" y="222" text-anchor="middle" fill="#0E0C09" font-size="10.5" font-weight="700">resource</text>
+          <text x="770" y="246" fill="#79C0FF" font-size="8.5">PK  resourceID</text>
+          <text x="770" y="260" fill="#CDD9E5" font-size="8.5">    title VARCHAR2(255)</text>
+          <text x="770" y="274" fill="#CDD9E5" font-size="8.5">    type, availableCopies</text>
+          <text x="770" y="288" fill="#CDD9E5" font-size="8.5">    totalCopies</text>
+          <text x="770" y="302" fill="#8B949E" font-size="7.5">    CHECK copies >= 0</text>
+
+          <!-- show -->
+          <rect x="285" y="390" width="155" height="90" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <rect x="285" y="390" width="155" height="24" rx="5" fill="rgba(192,124,42,.6)"/>
+          <text x="362" y="407" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">show</text>
+          <text x="295" y="432" fill="#79C0FF" font-size="8.5">PK  showID</text>
+          <text x="295" y="446" fill="#FFA657" font-size="8.5">FK  branchID</text>
+          <text x="295" y="460" fill="#CDD9E5" font-size="8.5">    town, eventDate, isCancelled</text>
+
+          <!-- official -->
+          <rect x="20" y="360" width="155" height="90" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <rect x="20" y="360" width="155" height="24" rx="5" fill="rgba(192,124,42,.6)"/>
+          <text x="97" y="377" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">official</text>
+          <text x="30" y="402" fill="#79C0FF" font-size="8.5">PK  officialID</text>
+          <text x="30" y="416" fill="#FFA657" font-size="8.5">FK  branchID</text>
+          <text x="30" y="430" fill="#CDD9E5" font-size="8.5">    fullName, position, phone</text>
+
+          <!-- announcement (right side) -->
+          <rect x="760" y="360" width="145" height="100" rx="5" fill="#161B22" stroke="#4A7C54" stroke-width="1.5"/>
+          <rect x="760" y="360" width="145" height="24" rx="5" fill="#4A7C54"/>
+          <text x="832" y="377" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">announcement</text>
+          <text x="770" y="402" fill="#79C0FF" font-size="8.5">PK  announcementID</text>
+          <text x="770" y="416" fill="#D2A8FF" font-size="8.5">    metadata ← JSON 21c</text>
+          <text x="770" y="430" fill="#CDD9E5" font-size="8.5">    title, body, postedDate</text>
+          <text x="770" y="444" fill="#CDD9E5" font-size="8.5">    isActive</text>
+
+          <!-- connector lines -->
+          <line x1="175" y1="88" x2="285" y2="190" stroke="rgba(192,124,42,.5)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <line x1="175" y1="245" x2="285" y2="245" stroke="rgba(192,124,42,.5)" stroke-width="1.2" stroke-dasharray="4,3"/>
+          <line x1="470" y1="185" x2="580" y2="108" stroke="rgba(158,61,34,.6)" stroke-width="1.5"/>
+          <line x1="470" y1="250" x2="580" y2="270" stroke="rgba(30,78,122,.6)" stroke-width="1.5"/>
+          <line x1="760" y1="260" x2="735" y2="260" stroke="rgba(30,78,122,.6)" stroke-width="1.5"/>
+          <line x1="97" y1="140" x2="97" y2="360" stroke="rgba(192,124,42,.35)" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="175" y1="88" x2="330" y2="390" stroke="rgba(192,124,42,.3)" stroke-width="1" stroke-dasharray="4,3"/>
+
+          <!-- Legend -->
+          <rect x="20" y="480" width="40" height="2" fill="#C07C2A"/>
+          <text x="66" y="484" fill="#8B949E" font-size="8">FK relationship</text>
+          <rect x="160" y="480" width="40" height="2" fill="#2A5230" rx="1"/>
+          <text x="206" y="484" fill="#8B949E" font-size="8">Central entity</text>
+          <circle cx="310" cy="482" r="4" fill="#D2A8FF"/>
+          <text x="318" y="485" fill="#8B949E" font-size="8">Oracle 21c column</text>
+        </svg>
+      </div>
+      <div class="funny" style="margin-top:1.25rem">
+        The <code>member</code> table is the gravitational centre of the entire schema. Everything either
+        points to it or depends on it. We briefly considered naming it <code>THE_FARMER_ALMIGHTY</code>
+        but Oracle has a 30-character limit on identifiers and <code>THE_FARMER_ALMIGHTY</code> is
+        exactly 19 characters, so we could have. We showed restraint. We are professionals.
+      </div>
+    </div>
+
+    <div class="rv" style="margin-top:3rem">
+      <h3 style="margin-bottom:1.25rem">The Four Special Oracle 21c Tables</h3>
+      <div class="grid2">
+        <div class="card card-r">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+            <span style="font-size:1.5rem">🔗</span>
+            <div><strong style="display:block">paymentAuditLedger</strong><span class="badge b-rust">Blockchain Table</span></div>
+          </div>
+          <p style="font-size:.84rem">Fed automatically by trigger on every payment INSERT. SHA2_512-chained rows that cannot be updated or deleted for 31 days. Not even SYSDBA can silently alter the chain without Oracle detecting it.</p>
+        </div>
+        <div class="card card-b">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+            <span style="font-size:1.5rem">🧊</span>
+            <div><strong style="display:block">borrowHistory</strong><span class="badge b-sky">Immutable Table</span></div>
+          </div>
+          <p style="font-size:.84rem">Populated when a borrow is returned. 90-day retention. Stores denormalised snapshots (member name + resource title) so history survives even if source rows are deleted.</p>
+        </div>
+        <div class="card card-au">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+            <span style="font-size:1.5rem">📊</span>
+            <div><strong style="display:block">paymentArchive</strong><span class="badge b-gold">Partitioned Table</span></div>
+          </div>
+          <p style="font-size:.84rem">INTERVAL RANGE partitioned by year. New annual partitions are created automatically. Revenue queries for a specific year only scan one physical segment — partition pruning in action.</p>
+        </div>
+        <div class="card card-g">
+          <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem">
+            <span style="font-size:1.5rem">📋</span>
+            <div><strong style="display:block">memberAuditLog</strong><span class="badge b-green">Trigger-fed Audit</span></div>
+          </div>
+          <p style="font-size:.84rem">Populated by <code>trg_member_audit</code> on every INSERT, UPDATE or DELETE to the member table. Captures old and new values, the database user, the action type, and the timestamp.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ FLASK ═══════════ -->
+<div class="ch" id="flask" data-num="03">
+  <div class="ch-inner">
+    <div class="ch-num">Section 03</div>
+    <h2>Flask Application Architecture</h2>
+    <p>How the Python layer is structured and how it talks to Oracle</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap">
+    <div class="rv">
+      <h3 style="margin-bottom:1rem">The Request Lifecycle</h3>
+      <p style="max-width:700px;margin-bottom:1.75rem">
+        Every single HTTP request follows the same path. Understanding this path means you understand
+        the entire application.
+      </p>
+      <div class="arch" style="margin-bottom:2rem">
+        <svg viewBox="0 0 860 120" xmlns="http://www.w3.org/2000/svg" style="font-family:'DM Mono',monospace;max-width:860px;width:100%">
+          <rect x="8" y="28" width="100" height="52" rx="5" fill="#2A5230" stroke="#4A7C54" stroke-width="1"/>
+          <text x="58" y="50" text-anchor="middle" fill="#fff" font-size="10">Browser</text>
+          <text x="58" y="65" text-anchor="middle" fill="rgba(255,255,255,.55)" font-size="8">HTTP Request</text>
+
+          <rect x="148" y="28" width="115" height="52" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <text x="205" y="50" text-anchor="middle" fill="#C07C2A" font-size="10">Flask Route</text>
+          <text x="205" y="65" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="8">Blueprint handler</text>
+
+          <rect x="313" y="28" width="115" height="52" rx="5" fill="#161B22" stroke="#C07C2A" stroke-width="1.5"/>
+          <text x="370" y="50" text-anchor="middle" fill="#C07C2A" font-size="10">db/ helpers</text>
+          <text x="370" y="65" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="8">fetchall / call_proc</text>
+
+          <rect x="478" y="28" width="115" height="52" rx="5" fill="#161B22" stroke="#FFA657" stroke-width="1.5"/>
+          <text x="535" y="50" text-anchor="middle" fill="#FFA657" font-size="10">Oracle Pool</text>
+          <text x="535" y="65" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="8">python-oracledb</text>
+
+          <rect x="643" y="28" width="115" height="52" rx="5" fill="#161B22" stroke="#79C0FF" stroke-width="1.5"/>
+          <text x="700" y="50" text-anchor="middle" fill="#79C0FF" font-size="10">Oracle 21c</text>
+          <text x="700" y="65" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="8">SQL / Stored Proc</text>
+
+          <defs>
+            <marker id="ar" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+              <path d="M0,0 L0,5 L7,2.5 z" fill="#C07C2A"/>
+            </marker>
+            <marker id="ar2" markerWidth="7" markerHeight="5" refX="1" refY="2.5" orient="auto">
+              <path d="M7,0 L7,5 L0,2.5 z" fill="rgba(192,124,42,.5)"/>
+            </marker>
+          </defs>
+          <path d="M108 54 L146 54" stroke="#C07C2A" stroke-width="1.5" marker-end="url(#ar)"/>
+          <path d="M263 54 L311 54" stroke="#C07C2A" stroke-width="1.5" marker-end="url(#ar)"/>
+          <path d="M428 54 L476 54" stroke="#C07C2A" stroke-width="1.5" marker-end="url(#ar)"/>
+          <path d="M593 54 L641 54" stroke="#C07C2A" stroke-width="1.5" marker-end="url(#ar)"/>
+          <path d="M700 80 Q700 108 370 108 Q40 108 58 82" stroke="rgba(192,124,42,.45)" stroke-width="1" fill="none" stroke-dasharray="4,3" marker-end="url(#ar2)"/>
+          <text x="380" y="105" text-anchor="middle" fill="rgba(192,124,42,.65)" font-size="7.5">list[dict] → Jinja2 template → HTML response</text>
+        </svg>
+      </div>
+    </div>
+
+    <div class="rv">
+      <div class="grid2">
+        <div>
+          <h3 style="margin-bottom:1.25rem">The Four Blueprints</h3>
+          <table class="dtable">
+            <thead><tr><th>Blueprint</th><th>Prefix</th><th>Who uses it</th></tr></thead>
+            <tbody>
+              <tr><td><code>public</code></td><td><code>/</code></td><td>Everyone (no login)</td></tr>
+              <tr><td><code>members</code></td><td><code>/members</code></td><td>Logged-in members</td></tr>
+              <tr><td><code>admin</code></td><td><code>/admin</code></td><td>Admin only</td></tr>
+              <tr><td><code>api</code></td><td><code>/api</code></td><td>AJAX from Chart.js / D3</td></tr>
+            </tbody>
+          </table>
+          <div class="funny" style="margin-top:1.25rem">
+            The <code>api</code> blueprint exists because JavaScript cannot call Python functions directly —
+            the browser and the server are two entirely separate processes that communicate via HTTP.
+            So Chart.js politely sends a GET request to <code>/api/monthly-revenue</code>,
+            receives JSON, and draws a chart. It's a bit like phoning a colleague to ask them to look
+            something up, then writing down what they say. Works perfectly. Just… a lot of phone calls.
+          </div>
+        </div>
+        <div>
+          <div class="codeblock">
+            <div class="codeblock-header">
+              <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+              <span class="code-fname">app.py — Application Factory</span>
+            </div>
+            <pre style="color:#CDD9E5">
+<span class="kw">def</span> <span class="fn">create_app</span>() -> Flask:
+    app = <span class="cls">Flask</span>(__name__)
+    app.config.from_object(<span class="cls">Config</span>)
+    app.secret_key = <span class="cls">Config</span>.SECRET_KEY
+
+    <span class="cm"># Initialise the Oracle connection pool once</span>
+    <span class="kw">from</span> db <span class="kw">import</span> init_pool
+    init_pool(app)
+
+    <span class="cm"># Register all four blueprints</span>
+    <span class="kw">from</span> routes.public  <span class="kw">import</span> public_bp
+    <span class="kw">from</span> routes.members <span class="kw">import</span> members_bp
+    <span class="kw">from</span> routes.admin   <span class="kw">import</span> admin_bp
+    <span class="kw">from</span> routes.api     <span class="kw">import</span> api_bp
+
+    app.register_blueprint(public_bp)
+    app.register_blueprint(members_bp,  url_prefix=<span class="str">"/members"</span>)
+    app.register_blueprint(admin_bp,    url_prefix=<span class="str">"/admin"</span>)
+    app.register_blueprint(api_bp,      url_prefix=<span class="str">"/api"</span>)
+
+    <span class="kw">return</span> app
+            </pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ ROUTES ═══════════ -->
+<div class="ch" id="routes" data-num="04">
+  <div class="ch-inner">
+    <div class="ch-num">Section 04</div>
+    <h2>Routes Reference</h2>
+    <p>Every HTTP endpoint, what it calls in Oracle, and who is allowed to call it</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap rv">
+    <div style="overflow-x:auto">
+      <table class="dtable">
+        <thead><tr><th>Method</th><th>Route</th><th>Handler</th><th>Oracle Call</th><th>Auth Required</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/</code></td><td><code>public.index</code></td><td><code>getDashboardStats</code> + 3 direct queries</td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/resources</code></td><td><code>public.resources</code></td><td>Direct SQL + GROUP BY type</td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/shows</code></td><td><code>public.shows</code></td><td>Direct SQL ordered by eventDate</td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/join</code></td><td><code>public.join</code></td><td><code>getCategories</code>, <code>getBranches</code></td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-rust">POST</span></td><td><code>/members/register</code></td><td><code>members.register</code></td><td><code>addMember</code> stored procedure</td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-rust">POST</span></td><td><code>/members/login</code></td><td><code>members.login</code></td><td>Direct SQL + bcrypt verify</td><td>None</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/members/dashboard</code></td><td><code>members.dashboard</code></td><td><code>getMemberActivityReport</code></td><td>Member session</td></tr>
+          <tr><td><span class="badge b-solid-rust">POST</span></td><td><code>/members/borrow/&lt;id&gt;</code></td><td><code>members.borrow</code></td><td><code>borrowResource</code> procedure</td><td>Member session</td></tr>
+          <tr><td><span class="badge b-solid-rust">POST</span></td><td><code>/members/return/&lt;id&gt;</code></td><td><code>members.return_resource</code></td><td><code>returnResource</code> procedure</td><td>Member session</td></tr>
+          <tr><td><span class="badge b-solid-rust">POST</span></td><td><code>/members/pay</code></td><td><code>members.make_payment</code></td><td><code>makePayment</code> → fires blockchain trigger</td><td>Member session</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/admin/</code></td><td><code>admin.dashboard</code></td><td>5 stored procedures in sequence</td><td>Admin session</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/admin/members</code></td><td><code>admin.members</code></td><td><code>searchMembers</code> or direct SQL</td><td>Admin session</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/admin/audit</code></td><td><code>admin.audit</code></td><td><code>getAuditTrail</code> + <code>getPaymentLedger</code></td><td>Admin session</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/api/monthly-revenue</code></td><td><code>api.monthly_revenue</code></td><td><code>getMonthlyRevenue</code> → JSON</td><td>None (AJAX)</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/api/graph-data</code></td><td><code>api.graph_data</code></td><td>3 SQL queries → nodes + edges JSON</td><td>None (AJAX)</td></tr>
+          <tr><td><span class="badge b-solid-green">GET</span></td><td><code>/api/branch-stats</code></td><td><code>api.branch_stats</code></td><td><code>membersPerBranch</code> view → JSON</td><td>None (AJAX)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ BLOCKCHAIN ═══════════ -->
+<div class="ch" id="blockchain" data-num="05">
+  <div class="ch-inner">
+    <div class="ch-num">Section 05 — Oracle 21c Feature</div>
+    <h2>Blockchain Tables</h2>
+    <p>Tamper-evident, SHA2_512-chained payment history that not even SYSDBA can erase</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">What is a Blockchain Table?</h3>
+        <p style="margin-bottom:1rem">
+          A Blockchain Table looks and feels like a regular Oracle table from the outside.
+          Under the hood, every row that is inserted gets cryptographically linked to the row before it
+          using SHA2_512. The hash chain is maintained by the Oracle engine itself — not your application code,
+          not a trigger, not a cron job. Oracle. The database. Just does it. Automatically.
+        </p>
+        <p style="margin-bottom:1rem">The consequences are profound:</p>
+        <ul style="margin:0 0 1rem 1.5rem;font-size:.88rem;line-height:2.1;color:var(--mid)">
+          <li>Rows <strong>cannot be updated</strong> — full stop, no exceptions</li>
+          <li>Rows <strong>cannot be deleted</strong> until the retention period expires</li>
+          <li>The table <strong>cannot be dropped</strong> while it contains recent data</li>
+          <li>Even a user with <code>SYSDBA</code> cannot silently alter the chain — Oracle will detect it</li>
+          <li>You can call <code>DBMS_BLOCKCHAIN_TABLE.VERIFY_ROWS</code> at any time to confirm integrity</li>
+        </ul>
+        <div class="note note-green">
+          <strong>Why we use it:</strong> Every time a member makes a payment, the <code>trg_payment_blockchain</code>
+          trigger automatically writes a copy to <code>paymentAuditLedger</code>. This gives the society an
+          unchallengeable financial audit trail. If a member disputes a charge or a treasurer is accused
+          of fraud, the blockchain table provides irrefutable cryptographic evidence. Signed by Oracle's
+          own hash engine. No application code required.
+        </div>
+        <div class="funny">
+          Before blockchain tables existed, "immutable audit trail" meant "we pinky-promise we haven't
+          touched the audit table." Oracle 21c made pinky-promises legally inadmissible.
+          Your DBA will find this either deeply reassuring or personally offensive, depending on how
+          much they trust themselves. Both reactions are valid.
+        </div>
+        <div class="note note-gold">
+          <strong>Flask connection:</strong> <code>routes/members.py → make_payment() → makePayment stored proc → INSERT into payment → trigger fires → row inserted into blockchain table.</code>
+          The Flask application never directly touches the blockchain table. Zero application code needed for the audit.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">oracle_advanced_21c.sql — Blockchain Table</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- Oracle 21c: CREATE BLOCKCHAIN TABLE</span>
+<span class="cm">-- This is NOT a regular table. Normal rules don't apply.</span>
+<span class="kw">CREATE BLOCKCHAIN TABLE</span> <span class="str">"paymentAuditLedger"</span> (
+    <span class="str">"ledgerID"</span>    NUMBER
+        <span class="kw">GENERATED BY DEFAULT AS IDENTITY</span>,
+    <span class="str">"paymentID"</span>   NUMBER       <span class="kw">NOT NULL</span>,
+    <span class="str">"memberID"</span>    NUMBER       <span class="kw">NOT NULL</span>,
+    <span class="str">"amount"</span>      NUMBER(10,2) <span class="kw">NOT NULL</span>,
+    <span class="str">"paymentType"</span> VARCHAR2(30) <span class="kw">NOT NULL</span>,
+    <span class="str">"actionTime"</span>  TIMESTAMP    <span class="kw">DEFAULT SYSTIMESTAMP</span>,
+    <span class="str">"actionBy"</span>    VARCHAR2(60) <span class="kw">DEFAULT USER</span>
+)
+<span class="kw">NO DROP UNTIL</span> <span class="num">31</span> <span class="kw">DAYS IDLE</span>
+<span class="kw">NO DELETE UNTIL</span> <span class="num">31</span> <span class="kw">DAYS AFTER INSERT</span>
+<span class="kw">HASHING USING</span> <span class="str">"SHA2_512"</span> <span class="kw">VERSION</span> <span class="str">"v1"</span>;
+<span class="cm">-- ↑ Every INSERT is hashed and chained to the</span>
+<span class="cm">--   previous row. Automatically. By the engine.</span>
+
+<span class="cm">-- The trigger that populates it</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="fn">"trg_payment_blockchain"</span>
+<span class="kw">AFTER INSERT ON</span> <span class="str">"payment"</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">BEGIN</span>
+    <span class="kw">INSERT INTO</span> <span class="str">"paymentAuditLedger"</span>
+        (<span class="str">"paymentID"</span>, <span class="str">"memberID"</span>,
+         <span class="str">"amount"</span>,    <span class="str">"paymentType"</span>)
+    <span class="kw">VALUES</span>
+        (:NEW.<span class="str">"paymentID"</span>, :NEW.<span class="str">"memberID"</span>,
+         :NEW.<span class="str">"amount"</span>,    :NEW.<span class="str">"paymentType"</span>);
+<span class="kw">END</span>;
+/
+
+<span class="cm">-- Verify chain integrity at any time</span>
+<span class="kw">BEGIN</span>
+    DBMS_BLOCKCHAIN_TABLE.<span class="fn">VERIFY_ROWS</span>(
+        schema_name => <span class="str">'AGRISOC'</span>,
+        table_name  => <span class="str">'paymentAuditLedger'</span>
+    );
+<span class="kw">END</span>;
+/
+<span class="cm">-- Returns: 0 rows tampered. Every time. Or it raises</span>
+<span class="cm">-- an exception and someone has a very bad day.</span>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ IMMUTABLE ═══════════ -->
+<div class="ch" id="immutable" data-num="06">
+  <div class="ch-inner">
+    <div class="ch-num">Section 06 — Oracle 21c Feature</div>
+    <h2>Immutable Tables</h2>
+    <p>Append-only archive storage — lighter than blockchain, still impossible to quietly alter</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">Blockchain vs Immutable — The Distinction</h3>
+        <table class="compare" style="margin-bottom:1.5rem">
+          <thead><tr><th>Property</th><th>Blockchain Table</th><th>Immutable Table</th></tr></thead>
+          <tbody>
+            <tr><td>Append-only (no UPDATE)</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+            <tr><td>No DELETE until retention</td><td>✅ Yes</td><td>✅ Yes</td></tr>
+            <tr><td>Hash chaining (SHA2_512)</td><td>✅ Yes</td><td>❌ No</td></tr>
+            <tr><td>Cryptographic verification</td><td>✅ VERIFY_ROWS</td><td>❌ No API</td></tr>
+            <tr><td>Performance overhead</td><td>Higher (hashing)</td><td>Lower</td></tr>
+            <tr><td>Our use case</td><td>Payment ledger</td><td>Borrow archive</td></tr>
+          </tbody>
+        </table>
+        <div class="note note-green">
+          <strong>Why we use it:</strong> <code>borrowHistory</code> stores every completed borrow as a
+          permanent, append-only record. We deliberately denormalise — storing the member's full name and
+          resource title directly — so the history remains readable even if the source member or resource
+          is later deleted. Perfect for annual library reports and proving that yes, James did borrow
+          the Seed Catalogue of 1987 and never returned it.
+        </div>
+        <div class="funny">
+          We used an immutable table rather than a blockchain table for borrow history because
+          borrow records don't need forensic tamper-evidence — they just need to exist forever.
+          Think of it as the difference between a notarised affidavit and a laminated sticky note.
+          Both permanent. One slightly more court-admissible.
+          We chose the laminated sticky note. It was faster to implement.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Immutable Table + Archive Trigger</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- Oracle 21c: CREATE IMMUTABLE TABLE</span>
+<span class="kw">CREATE IMMUTABLE TABLE</span> <span class="str">"borrowHistory"</span> (
+    <span class="str">"historyID"</span>      NUMBER
+        <span class="kw">GENERATED BY DEFAULT AS IDENTITY</span>,
+    <span class="str">"borrowID"</span>       NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"memberID"</span>       NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"resourceID"</span>     NUMBER        <span class="kw">NOT NULL</span>,
+    <span class="str">"memberName"</span>     VARCHAR2(62)  <span class="kw">NOT NULL</span>, <span class="cm">-- denorm</span>
+    <span class="str">"resourceTitle"</span>  VARCHAR2(255) <span class="kw">NOT NULL</span>, <span class="cm">-- denorm</span>
+    <span class="str">"borrowDate"</span>     DATE          <span class="kw">NOT NULL</span>,
+    <span class="str">"returnDate"</span>     DATE,
+    <span class="str">"archivedAt"</span>     TIMESTAMP <span class="kw">DEFAULT SYSTIMESTAMP</span>
+)
+<span class="kw">NO DROP UNTIL</span>   <span class="num">90</span> <span class="kw">DAYS IDLE</span>
+<span class="kw">NO DELETE UNTIL</span> <span class="num">90</span> <span class="kw">DAYS AFTER INSERT</span>;
+
+<span class="cm">-- Trigger: fires when returnDate is set for first time</span>
+<span class="kw">CREATE OR REPLACE TRIGGER</span> <span class="fn">"trg_borrow_archive"</span>
+<span class="kw">AFTER UPDATE OF</span> <span class="str">"returnDate"</span> <span class="kw">ON</span> <span class="str">"borrow"</span>
+<span class="kw">FOR EACH ROW</span>
+<span class="kw">WHEN</span> (NEW.<span class="str">"returnDate"</span> <span class="kw">IS NOT NULL AND</span>
+      OLD.<span class="str">"returnDate"</span> <span class="kw">IS NULL</span>)
+<span class="kw">DECLARE</span>
+    v_name  VARCHAR2(62);
+    v_title VARCHAR2(255);
+<span class="kw">BEGIN</span>
+    <span class="cm">-- Grab denormalised values for permanent record</span>
+    <span class="kw">SELECT</span> <span class="str">"fullName"</span> <span class="kw">INTO</span> v_name
+    <span class="kw">FROM</span>   <span class="str">"member"</span>
+    <span class="kw">WHERE</span>  <span class="str">"memberID"</span> = :NEW.<span class="str">"memberID"</span>;
+
+    <span class="kw">SELECT</span> <span class="str">"title"</span> <span class="kw">INTO</span> v_title
+    <span class="kw">FROM</span>   <span class="str">"resource"</span>
+    <span class="kw">WHERE</span>  <span class="str">"resourceID"</span> = :NEW.<span class="str">"resourceID"</span>;
+
+    <span class="kw">INSERT INTO</span> <span class="str">"borrowHistory"</span>
+        (<span class="str">"borrowID"</span>,    <span class="str">"memberID"</span>,
+         <span class="str">"resourceID"</span>,  <span class="str">"memberName"</span>,
+         <span class="str">"resourceTitle"</span>,<span class="str">"borrowDate"</span>, <span class="str">"returnDate"</span>)
+    <span class="kw">VALUES</span>
+        (:NEW.<span class="str">"borrowID"</span>,   :NEW.<span class="str">"memberID"</span>,
+         :NEW.<span class="str">"resourceID"</span>, v_name, v_title,
+         :NEW.<span class="str">"borrowDate"</span>, :NEW.<span class="str">"returnDate"</span>);
+<span class="kw">END</span>;
+/
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ JSON ═══════════ -->
+<div class="ch" id="json" data-num="07">
+  <div class="ch-inner">
+    <div class="ch-num">Section 07 — Oracle 21c Feature</div>
+    <h2>Native JSON Data Type</h2>
+    <p>OSON binary storage — not VARCHAR2, not CLOB. A first-class JSON type the engine understands natively.</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">Why Not Just Use VARCHAR2?</h3>
+        <p style="margin-bottom:1rem">
+          Before Oracle 21c, developers stored JSON in <code>VARCHAR2</code> or <code>CLOB</code> columns
+          with a <code>CHECK (col IS JSON)</code> constraint. Oracle would parse the text string on every
+          single access — turning a structured document into a parsing exercise every time you ran a query.
+          Fine for small documents and low traffic. Noticeably painful otherwise.
+        </p>
+        <p style="margin-bottom:1rem">
+          Oracle 21c introduced a dedicated <code>JSON</code> type that stores documents in
+          <strong>OSON</strong> (Oracle Optimised Storage for JSON) — a binary format that is
+          faster to parse, supports lazy field access, and is deeply understood by the query engine.
+          No text conversion. No full-document deserialisation to read one field.
+        </p>
+        <div class="note note-green">
+          <strong>Our use:</strong> The <code>announcement.metadata</code> column is typed as <code>JSON</code>.
+          Every announcement stores priority, author name, and tags as a JSON object.
+          Querying <code>JSON_VALUE("metadata", '$.priority')</code> reads only that field from the binary
+          OSON — and our function-based index on that path makes high-priority lookups instant.
+        </div>
+        <div class="funny">
+          We briefly considered storing metadata as separate columns: priority, author, tags.
+          Then we realised we'd want to add <code>attachment_url</code> next week,
+          <code>expiry_date</code> the week after, and <code>target_branch</code> the week after that.
+          Within a month the table would have 40 nullable columns for edge cases.
+          One JSON column: zero column sprawl. Oracle: <em>"I told you so."</em>
+          We listened. The table has five columns and we have our dignity.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Native JSON Column + Queries</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- Oracle 21c: native JSON column (binary OSON)</span>
+<span class="cm">-- Not VARCHAR2. Not CLOB. Actual JSON type.</span>
+<span class="str">"metadata"</span> <span class="kw">JSON</span>
+
+<span class="cm">-- Insert using JSON_OBJECT constructor</span>
+<span class="kw">INSERT INTO</span> <span class="str">"announcement"</span>
+    (<span class="str">"title"</span>, <span class="str">"body"</span>, <span class="str">"metadata"</span>)
+<span class="kw">VALUES</span> (
+    <span class="str">'Drought Advisory'</span>,
+    <span class="str">'Please conserve water and stagger irrigation...'</span>,
+    <span class="kw">JSON_OBJECT</span>(
+        <span class="str">'priority'</span> <span class="kw">VALUE</span> <span class="str">'high'</span>,
+        <span class="str">'author'</span>   <span class="kw">VALUE</span> <span class="str">'Branch Secretary'</span>,
+        <span class="str">'tags'</span>     <span class="kw">VALUE</span> <span class="str">'drought,water,crops'</span>
+    )
+);
+
+<span class="cm">-- Read with JSON_VALUE — reads only that field</span>
+<span class="cm">-- from binary OSON. No full document parse.</span>
+<span class="kw">SELECT</span>
+    <span class="str">"title"</span>,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.priority'</span>) <span class="kw">AS</span> priority,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.author'</span>)   <span class="kw">AS</span> author,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>, <span class="str">'$.tags'</span>)     <span class="kw">AS</span> tags
+<span class="kw">FROM</span>   <span class="str">"announcement"</span>
+<span class="kw">WHERE</span>  <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>,<span class="str">'$.priority'</span>) = <span class="str">'high'</span>;
+<span class="cm">-- ↑ hits idx_announcement_priority FBI, not full scan</span>
+
+<span class="cm">-- In the announcementSummary view:</span>
+<span class="kw">CREATE OR REPLACE VIEW</span> <span class="str">"announcementSummary"</span> <span class="kw">AS</span>
+<span class="kw">SELECT</span>
+    <span class="str">"title"</span>, <span class="str">"body"</span>, <span class="str">"postedDate"</span>,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>,<span class="str">'$.priority'</span>) <span class="kw">AS</span> priority,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>,<span class="str">'$.author'</span>)   <span class="kw">AS</span> author,
+    <span class="kw">JSON_VALUE</span>(<span class="str">"metadata"</span>,<span class="str">'$.tags'</span>)     <span class="kw">AS</span> tags
+<span class="kw">FROM</span>  <span class="str">"announcement"</span>
+<span class="kw">WHERE</span> <span class="str">"isActive"</span> = 1;
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ SQL MACROS ═══════════ -->
+<div class="ch" id="macros" data-num="08">
+  <div class="ch-inner">
+    <div class="ch-num">Section 08 — Oracle 21c Feature</div>
+    <h2>SQL Macros</h2>
+    <p>Parameterised SQL that is inlined by the optimizer at parse time. Zero runtime overhead.</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">How SQL Macros Work</h3>
+        <p style="margin-bottom:1rem">
+          A SQL Macro is a PL/SQL function that returns SQL text. But unlike a normal function, the
+          returned text is <strong>substituted into the calling query before the optimizer builds a plan</strong>.
+          The function body never executes at runtime — it only executes at parse time to produce the
+          SQL fragment that gets inlined.
+        </p>
+        <p style="margin-bottom:1rem">
+          The result: the optimizer sees the macro's SQL as if you'd typed it directly. It can push predicates
+          into it, use indexes, and compute optimal join orders — exactly like a hard-coded subquery.
+          All the convenience of a function. None of the per-row execution overhead.
+        </p>
+
+        <h4 style="margin-top:1.25rem;margin-bottom:.75rem">Two types:</h4>
+        <ul style="margin:0 0 1.25rem 1.5rem;font-size:.88rem;line-height:2.2;color:var(--mid)">
+          <li><strong>Scalar Macro</strong> — inline expression, usable anywhere a column expression fits</li>
+          <li><strong>Table Macro</strong> — inline SELECT, used in FROM clause like a parameterised view</li>
+        </ul>
+
+        <div class="note note-green">
+          <strong>Our macros:</strong><br><br>
+          <code>member_tenure_years(joinDate)</code> — Scalar. Returns years of membership as a decimal.
+          Used on member profiles and in <code>getMemberActivityReport</code>.<br><br>
+          <code>active_borrows_for(memberID)</code> — Table. Returns a member's active borrows.
+          Called like a real table: <code>SELECT * FROM active_borrows_for(101)</code>. Fully index-aware.<br><br>
+          <code>revenue_in_period(fromDate, toDate)</code> — Table. Revenue breakdown by category
+          for a date range. Powers the admin custom analytics query tool.
+        </div>
+
+        <div class="funny">
+          SQL Macros are what happens when Oracle engineers ask:
+          <em>"What if views could take parameters?"</em>
+          and then spend several years making it work properly without sacrificing optimizer intelligence.
+          The result is a function that completely disappears at execution time, leaving only clean,
+          optimized SQL in its place. Our PL/SQL developers called it cheating.
+          We called it Oracle 21c doing exactly what we paid for.
+          Everyone agreed the membership tenure calculation was cleaner for it.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">SQL Macros — Scalar and Table</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- SCALAR MACRO: used as an expression in SELECT/WHERE</span>
+<span class="cm">-- Returns SQL text, not a value. Inlined at parse time.</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">member_tenure_years</span>(
+    p_joinDate DATE
+) <span class="kw">RETURN</span> VARCHAR2 <span class="kw">SQL_MACRO(SCALAR)</span>
+<span class="kw">IS BEGIN</span>
+    <span class="kw">RETURN</span> <span class="str">q'[
+        ROUND(MONTHS_BETWEEN(SYSDATE, p_joinDate) / 12, 1)
+    ]'</span>;
+<span class="kw">END</span>;
+/
+
+<span class="cm">-- Usage — function body does NOT run at query time</span>
+<span class="kw">SELECT</span>
+    <span class="str">"fullName"</span>,
+    <span class="fn">member_tenure_years</span>(<span class="str">"joinDate"</span>) <span class="kw">AS</span> tenure_years
+<span class="kw">FROM</span> <span class="str">"member"</span>
+<span class="kw">WHERE</span> <span class="fn">member_tenure_years</span>(<span class="str">"joinDate"</span>) > <span class="num">5</span>;
+<span class="cm">-- Oracle sees: WHERE ROUND(MONTHS_BETWEEN(...)/12,1) > 5</span>
+<span class="cm">-- Not: call Python function for every row. World of difference.</span>
+
+<span class="cm">-- TABLE MACRO: a parameterised view</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">active_borrows_for</span>(
+    p_memberID NUMBER
+) <span class="kw">RETURN</span> VARCHAR2 <span class="kw">SQL_MACRO(TABLE)</span>
+<span class="kw">IS BEGIN</span>
+    <span class="kw">RETURN</span> <span class="str">q'[
+        SELECT
+            b."borrowID",
+            r."title"      AS resource_title,
+            b."borrowDate",
+            SYSDATE - b."borrowDate" AS days_out
+        FROM   "borrow"   b
+        JOIN   "resource" r
+            ON b."resourceID" = r."resourceID"
+        WHERE  b."memberID"   = p_memberID
+          AND  b."returnDate" IS NULL
+    ]'</span>;
+<span class="kw">END</span>;
+/
+
+<span class="cm">-- Called like a real table — optimizer sees the SQL</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">active_borrows_for</span>(<span class="num">101</span>);
+
+<span class="cm">-- TABLE MACRO: custom date-range revenue breakdown</span>
+<span class="kw">CREATE OR REPLACE FUNCTION</span> <span class="fn">revenue_in_period</span>(
+    p_from DATE, p_to DATE
+) <span class="kw">RETURN</span> VARCHAR2 <span class="kw">SQL_MACRO(TABLE)</span>
+<span class="kw">IS BEGIN</span>
+    <span class="kw">RETURN</span> <span class="str">q'[
+        SELECT
+            c."categoryName",
+            SUM(p."amount") AS total_revenue,
+            COUNT(*)        AS payment_count
+        FROM   "payment"  p
+        JOIN   "member"   m ON p."memberID"  = m."memberID"
+        JOIN   "category" c ON m."categoryID"= c."categoryID"
+        WHERE  p."paymentDate" BETWEEN p_from AND p_to
+        GROUP BY c."categoryName"
+    ]'</span>;
+<span class="kw">END</span>;
+/
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ VIRTUAL & INVISIBLE ═══════════ -->
+<div class="ch" id="virtual" data-num="09">
+  <div class="ch-inner">
+    <div class="ch-num">Section 09 — Oracle 21c Feature</div>
+    <h2>Virtual &amp; Invisible Columns</h2>
+    <p>Computed columns that never go stale, and sensitive columns that hide from <code>SELECT *</code></p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h4 style="margin-bottom:.75rem">Virtual Column: <code>fullName</code></h4>
+        <p style="margin-bottom:1rem">
+          A virtual column is defined as a SQL expression. Oracle evaluates it on-the-fly during queries.
+          Nothing is stored on disk — zero storage overhead. The value is always exactly consistent
+          with the base columns, automatically, forever, with no application effort.
+        </p>
+        <div class="codeblock" style="margin-bottom:1.25rem">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Virtual Column Definition</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="kw">ALTER TABLE</span> <span class="str">"member"</span> <span class="kw">ADD</span> (
+    <span class="str">"fullName"</span> VARCHAR2(62)
+    <span class="kw">GENERATED ALWAYS AS</span>
+    (TRIM(<span class="str">"firstName"</span>) || <span class="str">' '</span> || TRIM(<span class="str">"secondName"</span>))
+    <span class="kw">VIRTUAL</span>
+);
+<span class="cm">-- Used in every stored procedure and view</span>
+<span class="cm">-- that needs a displayable name.</span>
+<span class="cm">-- No UPDATE ever needed. No stale data possible.</span>
+          </pre>
+        </div>
+        <div class="funny">
+          Before virtual columns there were exactly two options:
+          store <code>fullName</code> (and risk it becoming stale when <code>firstName</code> is updated,
+          which will happen, it always happens, someone always updates a first name without touching fullName),
+          or concatenate in every query (and risk a developer forgetting the TRIM, producing
+          "James  Mwangi" with a rogue double space that only manifests in PDFs and printed reports).
+          Virtual columns eliminated both failure modes. One expression, defined once, correct always.
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-bottom:.75rem">Invisible Column: <code>pwdHash</code></h4>
+        <p style="margin-bottom:1rem">
+          An invisible column exists and functions exactly like a normal column — it stores data,
+          can be indexed, and can be queried — but it does not appear in <code>SELECT *</code>,
+          <code>%ROWTYPE</code>, or <code>DESCRIBE</code>. You must reference it by name explicitly.
+          This is precisely what you want for security-sensitive fields.
+        </p>
+        <div class="codeblock" style="margin-bottom:1.25rem">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Invisible Column + Login Query</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="kw">ALTER TABLE</span> <span class="str">"member"</span> <span class="kw">ADD</span> (
+    <span class="str">"pwdHash"</span> VARCHAR2(64) <span class="kw">INVISIBLE</span>
+);
+
+<span class="cm">-- SELECT * will NEVER return pwdHash</span>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="str">"member"</span>;
+<span class="cm">-- ↑ Safe to pass results anywhere — no hash leakage</span>
+
+<span class="cm">-- Must be named explicitly to retrieve it</span>
+<span class="kw">SELECT</span>
+    <span class="str">"memberID"</span>,
+    <span class="str">"fullName"</span>,
+    <span class="str">"pwdHash"</span>   <span class="cm">-- explicit — intentional access only</span>
+<span class="kw">FROM</span>  <span class="str">"member"</span>
+<span class="kw">WHERE</span> UPPER(<span class="str">"email"</span>) = UPPER(:email);
+<span class="cm">-- ↑ Used only in the login verification flow</span>
+
+<span class="cm">-- In Flask (members.py login handler):</span>
+<span class="cm">-- row = fetchone(sql, {'email': email})</span>
+<span class="cm">-- if bcrypt.checkpw(password, row['pwdHash']):</span>
+<span class="cm">--     session['member_id'] = row['memberID']</span>
+          </pre>
+        </div>
+        <div class="note note-gold">
+          <strong>Flask connection:</strong> <code>members.login()</code> queries <code>"pwdHash"</code> explicitly,
+          then calls <code>bcrypt.checkpw()</code>. If the hash is NULL (first login or reset), it falls back
+          to accepting the memberID as a one-time PIN, then prompts for a new password.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ INDEXES ═══════════ -->
+<div class="ch" id="indexes" data-num="10">
+  <div class="ch-inner">
+    <div class="ch-num">Section 10</div>
+    <h2>Index Strategy</h2>
+    <p>Nine indexes — B-tree, composite, function-based, JSON path, and invisible — each solving a specific query problem</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap rv">
+    <div class="funny" style="margin-bottom:2rem">
+      Indexes are like the index at the back of a textbook. Without them, Oracle reads every single row
+      in the table to find what you're looking for — this is called a "full table scan" and is Oracle's
+      polite way of saying "you have disappointed me and I am reading the entire book to find page 47."
+      With the right indexes, Oracle jumps straight to the answer. The art is choosing
+      which columns to index, in what combination, and whether you need a standard index
+      or something more specialised. We went fairly specialised.
+    </div>
+    <div style="overflow-x:auto">
+      <table class="dtable">
+        <thead><tr><th>Index Name</th><th>Type</th><th>Column(s)</th><th>Problem It Solves</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><code>idx_member_branchID</code></td>
+            <td><span class="badge b-green">B-tree</span></td>
+            <td><code>member.branchID</code></td>
+            <td>Every member query JOINs with branch. Without this, every JOIN causes Oracle to scan the entire member table for each branch row. With it: instant lookup.</td>
+          </tr>
+          <tr>
+            <td><code>idx_borrow_memberID</code></td>
+            <td><span class="badge b-green">B-tree</span></td>
+            <td><code>borrow.memberID</code></td>
+            <td>Finding all borrows for a specific member — used on the dashboard, overdue report, and member activity report. Called constantly.</td>
+          </tr>
+          <tr>
+            <td><code>idx_borrow_active</code></td>
+            <td><span class="badge b-sky">Composite</span></td>
+            <td><code>(memberID, returnDate)</code></td>
+            <td>The single most common borrow query: <em>WHERE memberID = :x AND returnDate IS NULL</em>. Both filter columns in one index scan. Without this, two separate index lookups or a full scan.</td>
+          </tr>
+          <tr>
+            <td><code>idx_member_email_upper</code></td>
+            <td><span class="badge b-gold">Function-based</span></td>
+            <td><code>UPPER("email")</code></td>
+            <td>Case-insensitive email login. Without this FBI, <code>WHERE UPPER(email) = :e</code> requires a full table scan on every login attempt. With it: single row lookup regardless of email case.</td>
+          </tr>
+          <tr>
+            <td><code>idx_member_fullName</code></td>
+            <td><span class="badge b-gold">Function-based</span></td>
+            <td><code>UPPER("fullName")</code></td>
+            <td>Admin member search by name. <code>searchMembers</code> procedure uses <code>LIKE UPPER('%:q%')</code> — index on the virtual column's uppercased value makes this fast even with wildcards.</td>
+          </tr>
+          <tr>
+            <td><code>idx_show_upcoming</code></td>
+            <td><span class="badge b-green">B-tree</span></td>
+            <td><code>(eventDate, branchID)</code></td>
+            <td>Homepage and shows page: <em>WHERE eventDate >= SYSDATE ORDER BY eventDate</em>. Composite index supports the range scan and eliminates a separate sort step.</td>
+          </tr>
+          <tr>
+            <td><code>idx_payment_memberID</code></td>
+            <td><span class="badge b-green">B-tree</span></td>
+            <td><code>payment.memberID</code></td>
+            <td>Member payment history page and the <code>getMonthlyRevenue</code> aggregation. Without this, every payment history query is a full table scan of potentially thousands of rows.</td>
+          </tr>
+          <tr>
+            <td><code>idx_announcement_priority</code></td>
+            <td><span class="badge b-gold">JSON FBI</span></td>
+            <td><code>JSON_VALUE("metadata",'$.priority')</code></td>
+            <td>Filtering announcements by priority (high / normal / low) from the native JSON column — without deserialising the full OSON document for every row in the table.</td>
+          </tr>
+          <tr>
+            <td><code>idx_payment_type_invis</code></td>
+            <td><span class="badge b-rust">Invisible</span></td>
+            <td><code>payment.paymentType</code></td>
+            <td>An invisible index used to test whether a paymentType index improves revenue-by-type queries. Invisible to the optimizer by default — enable with a hint to compare plans without committing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note note-gold" style="margin-top:1.5rem">
+      <strong>Invisible index note:</strong> An invisible index is fully maintained by Oracle on every DML operation but is ignored by the optimizer unless you force it with <code>/*+ INDEX(table idx_name) */</code>. It is the correct way to test whether a new index would help before committing to it in production — you get real index maintenance cost without any query plan disruption.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ TRIGGERS ═══════════ -->
+<div class="ch" id="triggers" data-num="11">
+  <div class="ch-inner">
+    <div class="ch-num">Section 11</div>
+    <h2>Triggers</h2>
+    <p>Four database-level triggers that automate audit, archiving, blockchain feeds, and stock protection</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap rv">
+    <p style="max-width:720px;margin-bottom:2rem">
+      A trigger is PL/SQL code that Oracle runs automatically when a table event occurs — completely
+      outside the application. This is crucial for audit and security features because it means
+      <strong>no application code path can bypass them</strong>. Not a bug. Not a test script.
+      Not a rogue admin connecting directly via SQL*Plus at midnight. The trigger fires regardless.
+    </p>
+
+    <div class="grid2" style="gap:1.75rem">
+
+      <!-- Trigger 1 -->
+      <div class="card card-g">
+        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+          <span style="font-size:1.4rem;margin-top:.1rem">⚡</span>
+          <div>
+            <code style="font-size:.83rem">trg_member_audit</code>
+            <div style="margin-top:.35rem"><span class="badge b-green">Audit Trail</span></div>
+          </div>
+        </div>
+        <p style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);margin-bottom:.75rem">AFTER INSERT OR UPDATE OR DELETE ON "member"</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">Captures every change to the member table into <code>memberAuditLog</code>. Records the action type (INSERT / UPDATE / DELETE), the database user who made the change, the timestamp, and the old and new values of key fields.</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">Even if an admin bypasses the Flask application entirely and runs SQL directly in SQLDeveloper, this trigger still fires. It is impossible to change a member record without leaving a trace.</p>
+        <div class="note note-gold" style="margin:0">
+          <strong>Flask path:</strong> <code>admin.toggle_member() → UPDATE member → trigger → memberAuditLog row</code>
+        </div>
+      </div>
+
+      <!-- Trigger 2 -->
+      <div class="card card-r">
+        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+          <span style="font-size:1.4rem;margin-top:.1rem">⚡</span>
+          <div>
+            <code style="font-size:.83rem">trg_payment_blockchain</code>
+            <div style="margin-top:.35rem"><span class="badge b-rust">Blockchain Feed</span></div>
+          </div>
+        </div>
+        <p style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);margin-bottom:.75rem">AFTER INSERT ON "payment"</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">Every new payment row automatically feeds the <code>paymentAuditLedger</code> blockchain table. The Flask application calls <code>makePayment()</code>, which INSERTs into <code>payment</code>, which fires this trigger. The blockchain write is automatic — not configurable, not skippable.</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">This is the heart of the financial audit system. Zero lines of Flask code are responsible for blockchain integrity. Oracle handles it entirely.</p>
+        <div class="note note-gold" style="margin:0">
+          <strong>Flask path:</strong> <code>members.make_payment() → makePayment proc → INSERT payment → trigger → blockchain table</code>
+        </div>
+      </div>
+
+      <!-- Trigger 3 -->
+      <div class="card card-b">
+        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+          <span style="font-size:1.4rem;margin-top:.1rem">⚡</span>
+          <div>
+            <code style="font-size:.83rem">trg_borrow_archive</code>
+            <div style="margin-top:.35rem"><span class="badge b-sky">Immutable Archive</span></div>
+          </div>
+        </div>
+        <p style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);margin-bottom:.75rem">AFTER UPDATE OF "returnDate" ON "borrow" WHEN (returnDate was NULL)</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">Fires only when <code>returnDate</code> changes from NULL to a real date — a genuine return event. The <code>WHEN</code> clause prevents accidental fires. Collects member name and resource title, then inserts a permanent denormalised snapshot into <code>borrowHistory</code>.</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">The denormalisation is intentional: the archive record remains readable even if the original member or resource row is later deleted.</p>
+        <div class="note note-gold" style="margin:0">
+          <strong>Flask path:</strong> <code>members.return_resource() → returnResource proc → UPDATE returnDate → trigger → borrowHistory</code>
+        </div>
+      </div>
+
+      <!-- Trigger 4 -->
+      <div class="card card-au">
+        <div style="display:flex;align-items:flex-start;gap:.75rem;margin-bottom:.75rem">
+          <span style="font-size:1.4rem;margin-top:.1rem">⚡</span>
+          <div>
+            <code style="font-size:.83rem">trg_resource_stock_guard</code>
+            <div style="margin-top:.35rem"><span class="badge b-gold">Stock Safety Net</span></div>
+          </div>
+        </div>
+        <p style="font-family:var(--ff-mono);font-size:.7rem;color:var(--gold);margin-bottom:.75rem">BEFORE UPDATE ON "resource"</p>
+        <p style="font-size:.84rem;margin-bottom:.75rem">A BEFORE trigger that raises <code>ORA-20010</code> if any UPDATE would set <code>availableCopies</code> below zero. This is a belt-and-suspenders safety net: the <code>borrowResource</code> stored procedure already checks availability, and the CHECK constraint catches negatives — but this trigger catches any direct UPDATE that bypasses both.</p>
+        <div class="funny" style="margin-top:.75rem;margin-bottom:0">
+          Some might call three layers of protection on one column excessive.
+          Those people have never seen a developer run a bulk UPDATE script
+          at 11pm on a Friday without checking the WHERE clause first.
+          We have seen this. Three layers is appropriate.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ ROLES ═══════════ -->
+<div class="ch" id="roles" data-num="12">
+  <div class="ch-inner">
+    <div class="ch-num">Section 12</div>
+    <h2>Roles &amp; Least-Privilege Access</h2>
+    <p>Three layered database roles — because not everyone needs to be a database demigod</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">The Principle of Least Privilege</h3>
+        <p style="margin-bottom:1rem">
+          Every component should have access to exactly what it needs — no more. In database terms:
+          create distinct roles for distinct user types and grant only the specific tables, columns,
+          and procedures each role requires. If someone doesn't need DELETE, they don't get DELETE.
+        </p>
+
+        <div class="funny">
+          We have three roles: <strong>agri_readonly</strong> (can look, cannot touch),
+          <strong>agri_member_role</strong> (can borrow and pay, cannot delete anything),
+          and <strong>agri_admin_role</strong> (can do almost everything, but still cannot
+          UPDATE or DELETE the blockchain table — because even Oracle wouldn't let us grant that,
+          because it doesn't exist as a permission for that table type).
+          We briefly considered an <strong>agri_omnipotent_god_role</strong>.
+          We decided that was a naming convention we didn't want to defend in a code review.
+        </div>
+
+        <h4 style="margin-top:1.5rem;margin-bottom:.75rem">Role Inheritance</h4>
+        <p style="margin-bottom:1rem">Roles cascade: <code>agri_admin_role</code> inherits everything from <code>agri_member_role</code>, which inherits everything from <code>agri_readonly</code>. This means each level only defines its additions, and revoking a middle role cascades through the hierarchy.</p>
+
+        <div class="note note-green">
+          <strong>Column-level grant highlight:</strong> <code>agri_member_role</code> receives
+          <code>UPDATE ("returnDate") ON "borrow"</code> — not full UPDATE privilege on the table.
+          Only that one column. Even if a member gains direct SQL access, they can only set a
+          return date. They cannot change who borrowed the resource, what was borrowed, or when.
+        </div>
+
+        <div class="note note-rust" style="margin-top:1rem">
+          <strong>What not even agri_admin_role can do:</strong> UPDATE or DELETE rows in
+          <code>paymentAuditLedger</code>. Not because we didn't grant it — because the blockchain
+          table doesn't permit it as a concept. You cannot grant a permission that doesn't exist.
+          The entire point.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Three-Layer Role Hierarchy</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- LAYER 1: READ ONLY — public data, no DML</span>
+<span class="kw">CREATE ROLE</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"branch"</span>       <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"resource"</span>     <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"show"</span>         <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"announcement"</span> <span class="kw">TO</span> agri_readonly;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"category"</span>     <span class="kw">TO</span> agri_readonly;
+
+<span class="cm">-- LAYER 2: MEMBER — inherits readonly + borrow/pay</span>
+<span class="kw">CREATE ROLE</span> agri_member_role;
+<span class="kw">GRANT</span> agri_readonly <span class="kw">TO</span> agri_member_role;
+
+<span class="kw">GRANT SELECT ON</span> <span class="str">"member"</span>  <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT INSERT ON</span> <span class="str">"borrow"</span>  <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT INSERT ON</span> <span class="str">"payment"</span> <span class="kw">TO</span> agri_member_role;
+
+<span class="cm">-- Column-level grant: only returnDate is updatable</span>
+<span class="kw">GRANT UPDATE</span> (<span class="str">"returnDate"</span>) <span class="kw">ON</span> <span class="str">"borrow"</span>
+    <span class="kw">TO</span> agri_member_role;
+
+<span class="kw">GRANT EXECUTE ON</span> <span class="str">"borrowResource"</span>    <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT EXECUTE ON</span> <span class="str">"returnResource"</span>    <span class="kw">TO</span> agri_member_role;
+<span class="kw">GRANT EXECUTE ON</span> <span class="str">"makePayment"</span>       <span class="kw">TO</span> agri_member_role;
+
+<span class="cm">-- LAYER 3: ADMIN — inherits member + full control</span>
+<span class="kw">CREATE ROLE</span> agri_admin_role;
+<span class="kw">GRANT</span> agri_member_role <span class="kw">TO</span> agri_admin_role;
+
+<span class="kw">GRANT INSERT, UPDATE, DELETE ON</span> <span class="str">"member"</span>
+    <span class="kw">TO</span> agri_admin_role;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"memberAuditLog"</span>
+    <span class="kw">TO</span> agri_admin_role;
+<span class="kw">GRANT SELECT ON</span> <span class="str">"paymentAuditLedger"</span>
+    <span class="kw">TO</span> agri_admin_role;
+
+<span class="cm">-- Note: UPDATE/DELETE on paymentAuditLedger is</span>
+<span class="cm">-- structurally impossible — BLOCKCHAIN TABLE.</span>
+<span class="cm">-- Not "not granted". Literally does not exist.</span>
+<span class="cm">-- We love this feature an unreasonable amount.</span>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ PROPERTY GRAPH ═══════════ -->
+<div class="ch" id="graph" data-num="13">
+  <div class="ch-inner">
+    <div class="ch-num">Section 13 — Oracle 21c Feature</div>
+    <h2>Property Graph</h2>
+    <p>Relational data modelled as a graph — members and resources as vertices, borrows as edges</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <div class="grid2 rv">
+      <div>
+        <h3 style="margin-bottom:1rem">What is a Property Graph?</h3>
+        <p style="margin-bottom:1rem">
+          Oracle Property Graphs define a graph schema over existing relational tables.
+          No data is copied. No ETL. The graph is a live view — vertices (nodes) map to tables,
+          edges map to association tables, and the entire thing is queryable with SQL/PGQ
+          pattern-matching syntax built directly into a regular SELECT statement.
+        </p>
+        <p style="margin-bottom:1rem">
+          SQL/PGQ lets you express things like: "find all members connected to this resource
+          through borrow events" using graph pattern notation
+          <code>(m IS Member)-[b IS Borrowed]->(r IS Resource)</code>
+          — a style borrowed from Cypher (Neo4j's query language) but executed entirely inside Oracle.
+        </p>
+        <div class="note note-green">
+          <strong>Our graph model:</strong> Members, Resources, and Branches are vertex tables.
+          The <code>borrow</code> table becomes an edge labelled "Borrowed", connecting Members to Resources.
+          This enables graph-native queries: which resources are most central to the network?
+          Which members share reading interests? What is the borrow-distance between two members?
+        </div>
+        <div class="note note-gold" style="margin-top:1rem">
+          <strong>Flask → D3 connection:</strong> The <code>/api/graph-data</code> endpoint runs
+          three SQL queries — member nodes, resource nodes, borrow edges — and returns
+          <code>{"nodes": [...], "links": [...]}</code>. D3's <code>forceSimulation</code>
+          uses this to render an interactive, physics-based network graph on the admin dashboard.
+          Drag a node. Watch the network reorganise. Oracle data. Browser physics. Magic.
+        </div>
+        <div class="funny">
+          Did we absolutely need a property graph for a library management system? Statistically: no.
+          Could a GROUP BY have produced the same "top borrowers" list? Yes, obviously.
+          Does a GROUP BY produce an <em>interactive force-directed D3 network diagram</em>
+          on the admin dashboard where you can drag individual member nodes around and watch
+          the graph physics respond in real time? It does not.
+          The property graph is completely justified on aesthetic grounds alone.
+          We stand by this decision.
+        </div>
+      </div>
+      <div>
+        <div class="codeblock">
+          <div class="codeblock-header">
+            <div class="code-dots"><span class="cd-r"></span><span class="cd-y"></span><span class="cd-g"></span></div>
+            <span class="code-fname">Property Graph Definition + GRAPH_TABLE Query</span>
+          </div>
+          <pre style="color:#CDD9E5">
+<span class="cm">-- Oracle 21c: Property Graph over existing tables</span>
+<span class="kw">CREATE OR REPLACE PROPERTY GRAPH</span> <span class="str">"agriGraph"</span>
+    <span class="kw">VERTEX TABLES</span> (
+        <span class="str">"member"</span>
+            <span class="kw">KEY</span> (<span class="str">"memberID"</span>)
+            <span class="kw">LABEL</span> Member
+            <span class="kw">PROPERTIES</span> (<span class="str">"firstName"</span>, <span class="str">"joinDate"</span>),
+
+        <span class="str">"resource"</span>
+            <span class="kw">KEY</span> (<span class="str">"resourceID"</span>)
+            <span class="kw">LABEL</span> Resource
+            <span class="kw">PROPERTIES</span> (<span class="str">"title"</span>, <span class="str">"type"</span>),
+
+        <span class="str">"branch"</span>
+            <span class="kw">KEY</span> (<span class="str">"branchID"</span>)
+            <span class="kw">LABEL</span> Branch
+            <span class="kw">PROPERTIES</span> (<span class="str">"branchName"</span>, <span class="str">"location"</span>)
+    )
+    <span class="kw">EDGE TABLES</span> (
+        <span class="str">"borrow"</span>
+            <span class="kw">KEY</span> (<span class="str">"borrowID"</span>)
+            <span class="kw">SOURCE KEY</span>      (<span class="str">"memberID"</span>)
+                <span class="kw">REFERENCES</span> <span class="str">"member"</span>
+            <span class="kw">DESTINATION KEY</span> (<span class="str">"resourceID"</span>)
+                <span class="kw">REFERENCES</span> <span class="str">"resource"</span>
+            <span class="kw">LABEL</span> Borrowed
+            <span class="kw">PROPERTIES</span> (<span class="str">"borrowDate"</span>, <span class="str">"returnDate"</span>)
+    );
+
+<span class="cm">-- Graph query using SQL/PGQ MATCH syntax</span>
+<span class="kw">SELECT</span> member_id, first_name, borrow_count
+<span class="kw">FROM GRAPH_TABLE</span> (
+    <span class="str">"agriGraph"</span>
+    <span class="kw">MATCH</span>
+        (m <span class="kw">IS</span> Member)
+        -[b <span class="kw">IS</span> Borrowed]->
+        (r <span class="kw">IS</span> Resource)
+    <span class="kw">COLUMNS</span> (
+        m.<span class="str">"memberID"</span>  <span class="kw">AS</span> member_id,
+        m.<span class="str">"firstName"</span> <span class="kw">AS</span> first_name,
+        r.<span class="str">"title"</span>     <span class="kw">AS</span> resource_title,
+        <span class="kw">COUNT</span>(*)     <span class="kw">AS</span> borrow_count
+    )
+)
+<span class="kw">ORDER BY</span> borrow_count <span class="kw">DESC</span>
+<span class="kw">FETCH FIRST</span> <span class="num">10</span> <span class="kw">ROWS ONLY</span>;
+<span class="cm">-- The pattern (m)-[b]->(r) reads naturally:</span>
+<span class="cm">-- "a Member connected via a Borrowed edge to a Resource"</span>
+          </pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ CHARTS ═══════════ -->
+<div class="ch" id="charts" data-num="14">
+  <div class="ch-inner">
+    <div class="ch-num">Section 14</div>
+    <h2>Charts &amp; the AJAX Pipeline</h2>
+    <p>How Oracle data travels from SQL through Flask JSON endpoints into Chart.js and D3 visualisations</p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap rv">
+    <div class="pq">
+      <p>A chart without data is decoration. A chart with Oracle 21c data is a dashboard. There is a meaningful difference.</p>
+      <cite>— This project, probably at 1am</cite>
+    </div>
+
+    <h3 style="margin:1.75rem 0 1.25rem">The Full Pipeline</h3>
+    <div class="flow" style="margin-bottom:2rem">
+      <div class="flow-box">Oracle 21c</div><div class="flow-arrow">→</div>
+      <div class="flow-box">Stored Proc / SQL</div><div class="flow-arrow">→</div>
+      <div class="flow-box">Python list[dict]</div><div class="flow-arrow">→</div>
+      <div class="flow-box">/api/* route</div><div class="flow-arrow">→</div>
+      <div class="flow-box">jsonify()</div><div class="flow-arrow">→</div>
+      <div class="flow-box">fetch() in charts.js</div><div class="flow-arrow">→</div>
+      <div class="flow-box">Chart.js / D3.js</div><div class="flow-arrow">→</div>
+      <div class="flow-box">Canvas / SVG</div>
+    </div>
+
+    <div class="grid2" style="margin-bottom:2rem">
+      <div>
+        <h4 style="margin-bottom:1rem">Six Chart.js Charts</h4>
+        <table class="dtable">
+          <thead><tr><th>Chart</th><th>Type</th><th>Oracle Source</th></tr></thead>
+          <tbody>
+            <tr><td>Monthly Revenue</td><td>Line</td><td><code>getMonthlyRevenue()</code></td></tr>
+            <tr><td>Membership Growth</td><td>Line (2 datasets)</td><td><code>getMembersJoinedByMonth()</code> — uses <code>SUM() OVER</code> window function for cumulative total</td></tr>
+            <tr><td>Revenue by Type</td><td>Doughnut</td><td><code>getRevenueByPaymentType()</code></td></tr>
+            <tr><td>Members per Branch</td><td>Bar</td><td><code>membersPerBranch</code> view</td></tr>
+            <tr><td>Revenue by Branch</td><td>Bar</td><td><code>revenueByBranch</code> view</td></tr>
+            <tr><td>Resource Usage</td><td>Horizontal bar</td><td><code>resourceUsage</code> view</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4 style="margin-bottom:1rem">D3.js Network Graph</h4>
+        <p style="font-size:.87rem;margin-bottom:1rem">
+          The member–resource borrow network uses D3's <code>forceSimulation</code> — a physics engine
+          where nodes repel each other and edges act as springs. The layout self-organises based on
+          connection density. Highly connected resources drift to the centre; isolated nodes float
+          to the edges. It is both analytically useful and genuinely beautiful to watch.
+        </p>
+        <p style="font-size:.87rem;margin-bottom:1rem">
+          Data comes from <code>/api/graph-data</code> which queries member nodes, resource nodes,
+          and borrow edges. Node colour encodes branch membership. Resource nodes use a 1000+ ID offset
+          to avoid collision with member IDs across the two tables.
+        </p>
+        <div class="note note-gold">
+          <strong>Drag interaction:</strong> D3's drag event updates node <code>fx</code> and <code>fy</code>
+          (fixed position) in real time. Release the node and it rejoins the simulation. The graph is fully
+          interactive — not a static image. Oracle data. Live physics. One <code>fetch()</code> call.
+        </div>
+      </div>
+    </div>
+
+    <div class="funny">
+      The membership growth chart has two datasets on the same axes: monthly new members (a line chart)
+      and cumulative total members (a running sum). The cumulative total uses Oracle's
+      <code>SUM() OVER (ORDER BY month ROWS UNBOUNDED PRECEDING)</code> window function.
+      Window functions are one of those features that, once understood, make you wonder how databases
+      existed without them. They're like GROUP BY but they don't discard your rows — they annotate them.
+      Oracle has had window functions since version 8i (1997). They are 28 years old.
+      We are using them in the freshest Oracle edition. They have aged like fine agricultural produce.
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════ END TO END FLOWS ═══════════ -->
+<div class="ch" id="flows" data-num="15">
+  <div class="ch-inner">
+    <div class="ch-num">Section 15</div>
+    <h2>How Everything Connects</h2>
+    <p>Three complete end-to-end walkthroughs of the system's most important flows</p>
+  </div>
+</div>
+
+<section class="band band-warm">
+  <div class="wrap rv">
+
+    <h3 style="margin-bottom:1.5rem">Flow 1 — A Farmer Joins the Society</h3>
+    <div class="steps" style="margin-bottom:3rem">
+      <div class="step">
+        <div class="step-num step-num-g">Step 1</div>
+        <div class="step-content">
+          <strong>Browser → GET /join</strong>
+          <p>Flask calls <code>getCategories()</code> and <code>getBranches()</code> via SYS_REFCURSOR stored procedures. Results returned as <code>list[dict]</code>, passed to <code>join.html</code> via Jinja2 context. The form renders with real membership categories and real branches from Oracle.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-g">Step 2</div>
+        <div class="step-content">
+          <strong>Farmer fills form → POST /members/register</strong>
+          <p>Flask calls <code>addMember()</code> stored procedure with form data. The procedure checks for a duplicate email — <code>RAISE_APPLICATION_ERROR(-20001, 'Email already registered')</code> if found — then INSERTs the new member with <code>joinDate = SYSDATE</code>. bcrypt hashes the password before the INSERT.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-g">Step 3</div>
+        <div class="step-content">
+          <strong>INSERT fires trg_member_audit automatically</strong>
+          <p>The AFTER INSERT trigger writes an 'INSERT' row to <code>memberAuditLog</code> with the database user, timestamp, and the new email value. Zero application code involved. The audit record exists before Flask has even returned its HTTP response.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-g">Step 4</div>
+        <div class="step-content">
+          <strong>Flash message: "Welcome — your Member ID is 42"</strong>
+          <p>Flask queries the newly created memberID by email, stores it in a flash message, and redirects to the login page. The farmer now has an ID. It is permanently recorded. The Oracle audit table already has proof it was created. Everyone is happy.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-g">Step 5</div>
+        <div class="step-content">
+          <strong>Farmer logs in → POST /members/login</strong>
+          <p>Flask queries <code>member</code> by <code>UPPER("email")</code> (hits the function-based index), retrieves <code>"pwdHash"</code> by explicit name (invisible column — not in SELECT *). <code>bcrypt.checkpw()</code> verifies. Flask session set. Member is in.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-g">Step 6</div>
+        <div class="step-content">
+          <strong>Dashboard → GET /members/dashboard</strong>
+          <p>Flask calls <code>getMemberActivityReport()</code> — this procedure uses the virtual <code>fullName</code> column and the <code>member_tenure_years()</code> SQL Macro. The member sees their profile, active borrows (from <code>active_borrows_for()</code> table macro), and payment history. Six Oracle 21c features, one dashboard.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:1.5rem">Flow 2 — Member Makes a Payment</h3>
+    <div class="steps" style="margin-bottom:3rem">
+      <div class="step">
+        <div class="step-num step-num-au">Step 1</div>
+        <div class="step-content">
+          <strong>POST /members/pay</strong>
+          <p>Flask calls <code>makePayment(memberID, amount, paymentType)</code> — a stored procedure that validates the payment type, verifies the member is active, and INSERTs into the <code>payment</code> table. One stored procedure call. One INSERT.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-au">Step 2</div>
+        <div class="step-content">
+          <strong>AFTER INSERT fires trg_payment_blockchain — automatically</strong>
+          <p>Oracle immediately inserts a row into <code>paymentAuditLedger</code> — the blockchain table — computing and storing the SHA2_512 hash chain link. The Flask application cannot observe this happening. It cannot prevent it. It cannot intercept it. It simply occurs.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-au">Step 3</div>
+        <div class="step-content">
+          <strong>Blockchain row is permanent</strong>
+          <p>The <code>paymentAuditLedger</code> row cannot be deleted for 31 days, cannot be updated ever, and the table cannot be dropped while it contains recent data. Call <code>DBMS_BLOCKCHAIN_TABLE.VERIFY_ROWS</code> at any point in the future — Oracle will confirm the chain is intact.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-au">Step 4</div>
+        <div class="step-content">
+          <strong>Admin views the ledger → GET /admin/audit</strong>
+          <p>Flask calls <code>getPaymentLedger()</code> which SELECTs from the blockchain table. Admin sees the full immutable payment history: amount, type, member, timestamp, and the database user who triggered the write. This is the financial record of the society. It cannot be edited. Not even by the admin. Especially not by the admin.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:1.5rem">Flow 3 — Admin Views the Dashboard</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num step-num-r">Step 1</div>
+        <div class="step-content">
+          <strong>GET /admin/ → admin_dashboard.html</strong>
+          <p>Flask calls <code>getDashboardStats()</code>, <code>getBranchReport()</code>, <code>getTopBorrowers()</code>, and <code>getOverdueBorrows()</code> — all returning SYS_REFCURSOR results. Data is passed to the template as Python dicts. Jinja2 renders KPI cards with <code>data-target</code> attributes for JavaScript counter animations.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-r">Step 2</div>
+        <div class="step-content">
+          <strong>JavaScript loads and initialises charts</strong>
+          <p><code>charts.js</code> runs after DOM load. Six chart initialisation functions are called, each triggering an AJAX <code>fetch()</code> to the corresponding <code>/api/*</code> endpoint. Flask calls the Oracle stored procedure or view for each, returns JSON via <code>jsonify()</code>. Chart.js renders on <code>&lt;canvas&gt;</code> elements.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-r">Step 3</div>
+        <div class="step-content">
+          <strong>D3 network graph loads from /api/graph-data</strong>
+          <p><code>initNetworkGraph()</code> calls <code>/api/graph-data</code>. Flask runs three SQL queries (member nodes, resource nodes, borrow edges) and returns a combined JSON object. D3 builds a force simulation with <code>forceLink</code>, <code>forceManyBody</code>, and <code>forceCenter</code>, and renders an interactive SVG network onto the page. The admin can drag nodes, inspect connections, and see the social topology of the library.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num step-num-r">Step 4</div>
+        <div class="step-content">
+          <strong>Admin navigates to Audit page → GET /admin/audit</strong>
+          <p>Both the blockchain ledger (<code>paymentAuditLedger</code>) and the member change log (<code>memberAuditLog</code>) are displayed side by side. The blockchain ledger shows the hash-chained payment history. The audit log shows every member change with old and new values. Together they provide complete, tamper-evident accountability for all money and all member data in the system.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════ CLOSING ═══════════ -->
+<section style="background:var(--gold-pale);padding:5rem 0;border-top:3px solid var(--gold)">
+  <div class="wrap">
+    <div class="rv" style="max-width:740px;margin:0 auto;text-align:center">
+      <p style="font-family:var(--ff-mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:.75rem">The Bottom Line</p>
+      <h2 style="margin-bottom:1rem">What We Actually Built</h2>
+      <hr class="div-gold" style="width:60px;margin:.75rem auto 1.75rem">
+      <p style="font-size:.97rem;line-height:2;margin-bottom:1.75rem">
+        AgriSoc Kenya is a fully functioning agricultural society management system built on Oracle 21c and Flask.
+        It uses <strong>blockchain tables</strong> to make payment history permanently tamper-proof,
+        <strong>immutable tables</strong> to archive borrow history forever,
+        <strong>native JSON columns</strong> for flexible announcement metadata stored in binary OSON,
+        <strong>SQL macros</strong> for zero-overhead parameterised query logic inlined at parse time,
+        <strong>virtual columns</strong> so full name is always in sync with no application effort,
+        <strong>invisible columns</strong> so password hashes are never accidentally returned by a SELECT *,
+        <strong>property graphs</strong> to model the borrow network and power the D3 visualisation,
+        <strong>four triggers</strong> to automate everything the application shouldn't have to think about,
+        <strong>nine indexes</strong> tuned to real query patterns including function-based and JSON path indexes,
+        and <strong>three database roles</strong> giving each user type exactly the permissions they need — no more, no less.
+      </p>
+      <p style="font-family:var(--ff-display);font-style:italic;font-size:1.05rem;color:var(--ink);line-height:1.8">
+        The farmers of Kenya may not know their annual subscription fees are being preserved in a
+        cryptographic chain. They may not know their membership tenure is calculated by a function
+        that dissolves into the query plan at parse time and leaves no runtime trace.
+        They may not know their borrow records are stored in an append-only table that will outlast
+        the server it runs on.
+        <br><br>
+        <strong>They deserve nothing less.</strong>
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <p style="margin-bottom:.5rem"><strong>AgriSoc Kenya</strong> — Technical Documentation</p>
+    <p>Flask 3.0 &nbsp;·&nbsp; Python-oracledb 2.x &nbsp;·&nbsp; Oracle Database 21c &nbsp;·&nbsp; Chart.js 4 &nbsp;·&nbsp; D3.js 7 &nbsp;·&nbsp; bcrypt</p>
+    <p style="margin-top:1rem;opacity:.5;font-size:.75rem">
+      Built with an unreasonable amount of Oracle enthusiasm.
+      All farmers depicted are fictional. All blockchain tables are very, very real.
+    </p>
+  </div>
+</footer>
+
+
+<script>
+const rvEls = document.querySelectorAll('.rv');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+}, { threshold: 0.07 });
+rvEls.forEach(el => obs.observe(el));
+
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav a');
+const sObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav a[href="#${e.target.id}"]`);
+      if (a) { a.classList.add('active'); a.scrollIntoView({block:'nearest',inline:'center'}); }
+    }
+  });
+}, { rootMargin: '-38% 0px -58% 0px' });
+sections.forEach(s => sObs.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Member Detail — Admin{% endblock %}
+{% block content %}
+<div class="admin-wrap">
+  <aside class="admin-sidebar">
+    <div style="padding:1.25rem 1.4rem .5rem"><div style="font-family:var(--font-display);color:var(--gold);font-size:1.1rem">⚙ Admin Panel</div></div>
+    <h5>Overview</h5>
+    <a href="{{ url_for('admin.dashboard') }}">📊 Dashboard</a>
+    <a href="{{ url_for('admin.analytics') }}">📈 Analytics</a>
+    <a href="{{ url_for('admin.audit') }}">🔒 Audit &amp; Ledger</a>
+    <h5>Manage</h5>
+    <a href="{{ url_for('admin.members') }}" class="active">👥 Members</a>
+    <a href="{{ url_for('admin.resources') }}">📚 Resources</a>
+    <a href="{{ url_for('public.shows') }}">🏟 Shows</a>
+    <h5>Tools</h5>
+    <a href="{{ url_for('public.oracle_features') }}">🛢 Oracle 21c Features</a>
+    <a href="{{ url_for('admin.logout') }}" style="color:var(--rust)!important;margin-top:1rem">← Sign Out</a>
+  </aside>
+  <div class="admin-main">
+    <div class="flex-between mb-3">
+      <div>
+        <a href="{{ url_for('admin.members') }}" style="font-size:.82rem;color:#8B7355">← Back to Members</a>
+        <h2 style="font-size:1.5rem;margin-top:.3rem">{{ profile.fullname or '—' }}</h2>
+      </div>
+      <div style="display:flex;gap:.75rem">
+        <form action="{{ url_for('admin.toggle_member', mid=profile.memberid) }}" method="POST">
+          <button class="btn btn-sm btn-secondary">{{ 'Deactivate' if profile.isactive==1 else 'Activate' }}</button>
+        </form>
+        <form action="{{ url_for('admin.delete_member', mid=profile.memberid) }}" method="POST"
+              onsubmit="return confirm('Permanently delete this member?')">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="grid-2 mb-3">
+      <!-- Profile Card -->
+      <div class="admin-card">
+        <div class="admin-card-title">Member Profile <span class="badge badge-gold mono" style="font-size:.62rem">Virtual Col + SQL Macro</span></div>
+        <div class="profile-field"><label>Member ID</label><span>{{ profile.memberid }}</span></div>
+        <div class="profile-field"><label>Full Name</label><span>{{ profile.fullname }}</span></div>
+        <div class="profile-field"><label>Email</label><span>{{ profile.email }}</span></div>
+        <div class="profile-field"><label>Phone</label><span>{{ profile.phoneno }}</span></div>
+        <div class="profile-field"><label>Branch</label><span>{{ profile.branchname }}</span></div>
+        <div class="profile-field"><label>Category</label><span>{{ profile.categoryname }}</span></div>
+        <div class="profile-field"><label>Join Date</label><span>{{ profile.joindate.strftime('%d %b %Y') if profile.joindate else '—' }}</span></div>
+        <div class="profile-field"><label>Tenure (SQL Macro)</label><span>{{ profile.tenure_years }} years</span></div>
+        <div class="profile-field"><label>Status</label>
+          <span>{% if profile.isactive==1 %}<span class="badge badge-green">Active</span>{% else %}<span class="badge badge-rust">Inactive</span>{% endif %}</span>
+        </div>
+      </div>
+      <!-- Stats Card -->
+      <div class="admin-card">
+        <div class="admin-card-title">Activity Summary</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div style="text-align:center;padding:1rem;background:var(--parchment);border-radius:var(--radius)">
+            <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--gold)">{{ profile.total_borrows or 0 }}</div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#8B7355">Total Borrows</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--parchment);border-radius:var(--radius)">
+            <div style="font-family:var(--font-display);font-size:2rem;font-weight:700;color:var(--rust)">{{ profile.active_borrows or 0 }}</div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#8B7355">Active Borrows</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--parchment);border-radius:var(--radius)">
+            <div style="font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--leaf)">{{ '{:,.0f}'.format(profile.total_paid or 0) }}</div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#8B7355">KES Paid Total</div>
+          </div>
+          <div style="text-align:center;padding:1rem;background:var(--parchment);border-radius:var(--radius)">
+            <div style="font-size:.88rem;font-weight:600;color:var(--sky)">{{ profile.last_payment.strftime('%d %b %Y') if profile.last_payment else 'Never' }}</div>
+            <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:#8B7355">Last Payment</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Borrow History -->
+    <div class="admin-card">
+      <div class="admin-card-title">Borrow History</div>
+      {% if borrows %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Resource</th><th>Type</th><th>Borrowed</th><th>Returned</th><th>Days</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for b in borrows %}
+            <tr>
+              <td><strong>{{ b.title }}</strong></td>
+              <td><span class="resource-badge">{{ b.type }}</span></td>
+              <td>{{ b.borrowdate.strftime('%d %b %Y') if b.borrowdate else '—' }}</td>
+              <td>{{ b.returndate.strftime('%d %b %Y') if b.returndate else '—' }}</td>
+              <td>{{ b.days }}</td>
+              <td>{% if not b.returndate %}<span class="badge badge-rust">Active</span>{% else %}<span class="badge badge-green">Returned</span>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:1.5rem"><span>📖</span>No borrows on record.</div>
+      {% endif %}
+    </div>
+
+    <!-- Payment History -->
+    <div class="admin-card mt-2">
+      <div class="admin-card-title">Payment History <span class="badge badge-rust mono" style="font-size:.62rem">Blockchain Ledger</span></div>
+      {% if payments %}
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Type</th><th>Amount (KES)</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for p in payments %}
+            <tr>
+              <td><span class="badge badge-gold">{{ p.paymenttype }}</span></td>
+              <td><strong>{{ '{:,.0f}'.format(p.amount) }}</strong></td>
+              <td>{{ p.paymentdate.strftime('%d %b %Y') if p.paymentdate else '—' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state" style="padding:1.5rem"><span>💳</span>No payments recorded.</div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

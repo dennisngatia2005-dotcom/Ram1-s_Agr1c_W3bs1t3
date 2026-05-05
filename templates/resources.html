@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Resource Library — AgriSoc Kenya{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=1400&auto=format&fit=crop&q=50')"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container page-hero-inner">
+    <p class="breadcrumb"><a href="{{ url_for('public.index') }}">Home</a> › Library</p>
+    <h1>Resource Library</h1>
+    <p>Books, journals, manuals and seed catalogues available to all members</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Filter Bar -->
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:2rem;align-items:center">
+      <span style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8B7355">Filter:</span>
+      <button class="btn btn-sm btn-primary filter-btn active" data-filter="all">All</button>
+      {% set types = [] %}
+      {% for r in resources %}{% if r.type not in types %}{% set _ = types.append(r.type) %}{% endif %}{% endfor %}
+      {% for t in types %}
+      <button class="btn btn-sm btn-secondary filter-btn" data-filter="{{ t }}">{{ t }}</button>
+      {% endfor %}
+    </div>
+
+    {% if resources %}
+    <div class="grid-3" id="resources-grid">
+      {% for r in resources %}
+      <div class="card resource-item" data-type="{{ r.type }}">
+        <div class="card-body">
+          <span class="resource-badge">{{ r.type }}</span>
+          <h3 class="card-title mt-1">{{ r.title }}</h3>
+          {% set copies = r.availablecopies %}
+          <div class="{% if copies > 5 %}copies-avail{% elif copies > 0 %}copies-scarce{% else %}copies-none{% endif %}">
+            {% if copies > 0 %}
+              📗 {{ copies }} cop{{ 'y' if copies == 1 else 'ies' }} available
+            {% else %}
+              📕 All copies currently borrowed
+            {% endif %}
+          </div>
+          <div style="font-size:.76rem;color:#8B7355;margin-top:.35rem">
+            Borrowed {{ r.times_borrowed }} time{{ 's' if r.times_borrowed != 1 else '' }} total
+          </div>
+        </div>
+        <div class="card-footer" style="padding:.75rem 1.25rem">
+          {% if session.get('member_id') and copies > 0 %}
+          <form action="{{ url_for('members.borrow', resource_id=r.resourceid) }}" method="POST" style="display:inline">
+            <button class="btn btn-sm btn-primary">Borrow</button>
+          </form>
+          {% elif not session.get('member_id') %}
+          <a href="{{ url_for('members.login') }}" class="btn btn-sm btn-secondary">Sign in to borrow</a>
+          {% else %}
+          <span style="font-size:.8rem;color:#8B7355">Currently unavailable</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state"><span>📚</span>No resources in the library yet.</div>
+    {% endif %}
+
+    <!-- Admin: Add Resource -->
+    {% if session.get('is_admin') %}
+    <div class="card mt-4" style="border-top:3px solid var(--leaf)">
+      <div class="card-header"><h3>Add a Resource</h3></div>
+      <div class="card-body">
+        <form action="{{ url_for('admin.add_resource') }}" method="POST">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Title</label>
+              <input type="text" name="title" class="form-control" required placeholder="Resource title">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Type</label>
+              <select name="type" class="form-control">
+                <option>Book</option><option>Journal</option>
+                <option>Video</option><option>Seed Catalogue</option><option>Manual</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group" style="max-width:220px">
+            <label class="form-label">Number of Copies</label>
+            <input type="number" name="copies" min="1" value="1" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Add Resource</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

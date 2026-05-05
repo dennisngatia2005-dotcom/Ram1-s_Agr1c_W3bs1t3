@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Shows & Events — AgriSoc Kenya{% endblock %}
+{% block content %}
+
+<section class="page-hero">
+  <div class="page-hero-bg" style="background-image:url('https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1400&auto=format&fit=crop&q=50')"></div>
+  <div class="page-hero-overlay"></div>
+  <div class="container page-hero-inner">
+    <p class="breadcrumb"><a href="{{ url_for('public.index') }}">Home</a> › Shows</p>
+    <h1>Agricultural Shows &amp; Events</h1>
+    <p>Competitions, exhibitions and field days across Kenya's four regions</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="tabs-wrapper">
+      <div class="tabs">
+        <button class="tab-btn" data-target="upcoming-panel">🗓 Upcoming Shows</button>
+        <button class="tab-btn" data-target="past-panel">📜 Past Shows</button>
+        {% if session.get('is_admin') %}<button class="tab-btn" data-target="add-panel">+ Add Show</button>{% endif %}
+      </div>
+
+      <!-- Upcoming -->
+      <div id="upcoming-panel" class="tab-panel">
+        {% if upcoming %}
+        <div class="grid-3 mt-3">
+          {% for s in upcoming %}
+          <div class="card show-card">
+            <div class="show-date">
+              <div class="day">{{ s.eventdate.strftime('%d') }}</div>
+              <div class="mon">{{ s.eventdate.strftime('%b') }}</div>
+              <div class="yr">{{ s.eventdate.strftime('%Y') }}</div>
+            </div>
+            <div class="show-info">
+              <h3 class="card-title">{{ s.town }} Agricultural Show</h3>
+              <div style="font-size:.82rem;color:#8B7355;margin-top:.4rem">📍 {{ s.branchname }}</div>
+              <div style="font-size:.82rem;color:#8B7355">🏘 {{ s.location }}</div>
+              {% if s.iscancelled == 1 %}
+              <span class="badge badge-rust mt-1" style="margin-top:.5rem;display:inline-block">Cancelled</span>
+              {% else %}
+              <span class="badge badge-green mt-1" style="margin-top:.5rem;display:inline-block">Confirmed</span>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state mt-3"><span>🗓</span>No upcoming shows scheduled yet.</div>
+        {% endif %}
+      </div>
+
+      <!-- Past -->
+      <div id="past-panel" class="tab-panel">
+        {% if past %}
+        <div class="table-wrap mt-3">
+          <table>
+            <thead>
+              <tr><th>Town / Venue</th><th>Branch</th><th>Location</th><th>Date</th></tr>
+            </thead>
+            <tbody>
+              {% for s in past %}
+              <tr>
+                <td><strong>{{ s.town }} Agricultural Show</strong></td>
+                <td><span class="badge badge-soil">{{ s.branchname }}</span></td>
+                <td>{{ s.location }}</td>
+                <td>{{ s.eventdate.strftime('%d %b %Y') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="empty-state mt-3"><span>📜</span>No past shows on record.</div>
+        {% endif %}
+      </div>
+
+      <!-- Admin: Add Show -->
+      {% if session.get('is_admin') %}
+      <div id="add-panel" class="tab-panel">
+        <div class="card mt-3" style="max-width:520px">
+          <div class="card-header"><h3>Schedule a New Show</h3></div>
+          <div class="card-body">
+            <form action="{{ url_for('admin.add_show') }}" method="POST">
+              <div class="form-group">
+                <label class="form-label">Town / Venue</label>
+                <input type="text" name="town" class="form-control" required placeholder="e.g. Nakuru Town">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Branch</label>
+                <select name="branchID" class="form-control" required>
+                  <option value="">Select branch…</option>
+                  {% for b in branches %}
+                  <option value="{{ b.branchid }}">{{ b.branchname }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Event Date</label>
+                <input type="date" name="eventDate" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Schedule Show</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+</section>
+{% endblock %}
