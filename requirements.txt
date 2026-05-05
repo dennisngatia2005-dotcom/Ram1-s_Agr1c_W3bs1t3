@@ -2,3 +2,4 @@ flask
 oracledb
 dotenv
 bcrypt
+requests

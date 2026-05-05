@@ -6,6 +6,9 @@ load_dotenv()
 
 class Config:
     SECRET_KEY   = os.getenv("SECRET_KEY",  "agrisoc-change-in-production-2024")
+    KEY = os.getenv("KEY", "agrisoc-change-in-production-2030") 
+    KEY2 = os.getenv("KEY2", "agrisoc-change-in-production-2035")
+    SUPER_SECRET_KEY = os.getenv("SUPER_SECRET_KEY", "agrisoc-change-in-production-2040")
     DB_USER      = os.getenv("DB_USER",     "agrisoc")
     DB_PASS      = os.getenv("DB_PASS",     "agrisoc123")
     DB_DSN       = os.getenv("DB_DSN",      "localhost:1521/XEPDB1")

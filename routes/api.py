@@ -1,7 +1,6 @@
 """routes/api.py — JSON endpoints for charts, graphs and AJAX."""
 from flask import Blueprint, jsonify, request
 from db import fetchall, fetchone, call_proc
-
 api_bp = Blueprint("api", __name__)
 
 
