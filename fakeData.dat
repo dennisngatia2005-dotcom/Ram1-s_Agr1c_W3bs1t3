@@ -1,0 +1,370 @@
+-- =====================================================
+--We need data, we have data, 
+-- =====================================================
+
+
+-- =====================================================
+-- BRANCHES
+-- =====================================================
+
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Nairobi Central Office',          'Nairobi');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Kiambu Farmers Hub',              'Kiambu');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Nakuru Agricultural Center',      'Nakuru');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Eldoret Grain Office',            'Uasin Gishu');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Nyeri Coffee Support Office',     'Nyeri');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Kericho Tea Development Office',  'Kericho');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Kisumu Lakeside Farmers Office',  'Kisumu');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Machakos Dryland Farming Center', 'Machakos');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Meru Agribusiness Support Center','Meru');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Kitale Maize Belt Office',        'Trans Nzoia');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Embu Irrigation Support Office',  'Embu');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Kakamega Sugarcane Farmers Office','Kakamega');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Garissa Livestock Support Center','Garissa');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Isiolo Pastoralist Support Office','Isiolo');
+INSERT INTO "branch_table" ("branchName", "location") VALUES ('Mombasa Coastal Agriculture Office','Mombasa');
+
+COMMIT;
+
+
+-- =====================================================
+-- CATEGORIES (5 rows — must exist before members)
+-- =====================================================
+
+INSERT INTO "category_table" ("categoryName","entryFee","annualFee") VALUES ('Crop Farmer',      500,  1200);
+INSERT INTO "category_table" ("categoryName","entryFee","annualFee") VALUES ('Livestock Farmer', 500,  1500);
+INSERT INTO "category_table" ("categoryName","entryFee","annualFee") VALUES ('Agri-Business',    1000, 3000);
+INSERT INTO "category_table" ("categoryName","entryFee","annualFee") VALUES ('Student / Youth',  200,  500);
+INSERT INTO "category_table" ("categoryName","entryFee","annualFee") VALUES ('Associate',        300,  800);
+
+COMMIT;
+
+
+-- =====================================================
+-- RESOURCES
+-- =====================================================
+
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Maize Farming Guide for Kenyan Farmers',   'Book',    10);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Dairy Farming Best Practices Manual',      'Book',    8);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Poultry Farming for Beginners',            'Book',    12);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Coffee Farming Techniques in East Africa', 'Book',    6);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Tea Plantation Management Guide',          'Book',    7);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Irrigation Methods and Water Conservation','Journal', 9);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Soil Fertility and Management Practices',  'Journal', 10);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Climate-Smart Agriculture Report 2024',    'Journal', 5);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Monthly Farmers Bulletin - January',       'Magazine',15);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Market Prices and Trends - Weekly Report', 'Magazine',20);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Agricultural News Kenya - Special Edition','Magazine',14);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Drip Irrigation Installation Tutorial',    'DVD',     6);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Greenhouse Farming Techniques',            'DVD',     5);
+INSERT INTO "resource_table" ("title", "type", "availableCopies") VALUES ('Organic Farming Methods Training Video',   'DVD',     7);
+
+COMMIT;
+
+
+-- =====================================================
+-- OFFICIALS (2 per branch = 30 rows)
+-- =====================================================
+
+BEGIN
+    FOR b IN (SELECT "branchID", "branchName" FROM "branch_table" ORDER BY "branchID") LOOP
+        INSERT INTO "official_table" ("fullName","position","phoneNo","branchID")
+        VALUES (
+            'Chairman ' || b."branchName",
+            'Branch Chairman',
+            '0700' || LPAD(b."branchID" * 2 - 1, 6, '0'),
+            b."branchID"
+        );
+        INSERT INTO "official_table" ("fullName","position","phoneNo","branchID")
+        VALUES (
+            'Secretary ' || b."branchName",
+            'Branch Secretary',
+            '0700' || LPAD(b."branchID" * 2, 6, '0'),
+            b."branchID"
+        );
+    END LOOP;
+    COMMIT;
+END;
+/
+
+
+-- =====================================================
+-- MEMBERS (50 members, random branch and category)
+-- =====================================================
+
+BEGIN
+    FOR i IN 1..50 LOOP
+        INSERT INTO "member_table" (
+            "firstName",
+            "secondName",
+            "email",
+            "phoneNo",
+            "branchID",
+            "categoryID",
+            "joinDate"
+        )
+        VALUES (
+            CASE MOD(i,10)
+                WHEN 0 THEN 'James'
+                WHEN 1 THEN 'Mary'
+                WHEN 2 THEN 'John'
+                WHEN 3 THEN 'Faith'
+                WHEN 4 THEN 'Peter'
+                WHEN 5 THEN 'Grace'
+                WHEN 6 THEN 'David'
+                WHEN 7 THEN 'Esther'
+                WHEN 8 THEN 'Joseph'
+                ELSE        'Naomi'
+            END,
+
+            CASE MOD(i,10)
+                WHEN 0 THEN 'Mwangi'
+                WHEN 1 THEN 'Achieng'
+                WHEN 2 THEN 'Otieno'
+                WHEN 3 THEN 'Njeri'
+                WHEN 4 THEN 'Kamau'
+                WHEN 5 THEN 'Wanjiku'
+                WHEN 6 THEN 'Omondi'
+                WHEN 7 THEN 'Atieno'
+                WHEN 8 THEN 'Kiptoo'
+                ELSE        'Mutua'
+            END,
+
+            LOWER('member' || i || '@farmers.co.ke'),
+
+            -- Standard Kenyan 10-digit mobile number
+            '07' || LPAD(i, 8, '0'),
+
+            -- Random valid branchID
+            (SELECT "branchID" FROM (
+                SELECT "branchID" FROM "branch_table" ORDER BY DBMS_RANDOM.VALUE
+            ) WHERE ROWNUM = 1),
+
+            -- Random valid categoryID
+            (SELECT "categoryID" FROM (
+                SELECT "categoryID" FROM "category_table" ORDER BY DBMS_RANDOM.VALUE
+            ) WHERE ROWNUM = 1),
+
+            -- Join date within last 2 years
+            SYSDATE - TRUNC(DBMS_RANDOM.VALUE(1, 730))
+        );
+    END LOOP;
+    COMMIT;  -- [FIX] added — was missing, risking loss of all 50 rows on disconnect
+END;
+/
+
+
+-- =====================================================
+-- PAYMENTS (random payments for ~40 of the 50 members)
+-- Each member gets 1–3 payments of varying types
+-- =====================================================
+
+BEGIN
+    FOR m IN (
+        SELECT "memberID"
+        FROM   "member_table"
+        WHERE  MOD("memberID", 5) != 0   -- skip every 5th member (leaves some with no payments)
+        ORDER BY "memberID"
+    ) LOOP
+        -- Entry fee payment
+        INSERT INTO "payment_table" ("memberID","amount","paymentType","paymentDate")
+        VALUES (
+            m."memberID",
+            (SELECT "entryFee"
+             FROM   "category_table" ct
+             JOIN   "member_table"   mb ON ct."categoryID" = mb."categoryID"
+             WHERE  mb."memberID" = m."memberID"),
+            'Entry Fee',
+            SYSDATE - TRUNC(DBMS_RANDOM.VALUE(30, 700))
+        );
+
+        -- Annual fee payment (most members)
+        IF MOD(m."memberID", 3) != 0 THEN
+            INSERT INTO "payment_table" ("memberID","amount","paymentType","paymentDate")
+            VALUES (
+                m."memberID",
+                (SELECT "annualFee"
+                 FROM   "category_table" ct
+                 JOIN   "member_table"   mb ON ct."categoryID" = mb."categoryID"
+                 WHERE  mb."memberID" = m."memberID"),
+                'Annual Fee',
+                SYSDATE - TRUNC(DBMS_RANDOM.VALUE(1, 365))
+            );
+        END IF;
+
+        -- Occasional event fee (every 4th member)
+        IF MOD(m."memberID", 4) = 0 THEN
+            INSERT INTO "payment_table" ("memberID","amount","paymentType","paymentDate")
+            VALUES (
+                m."memberID",
+                ROUND(DBMS_RANDOM.VALUE(200, 800)),
+                'Event Fee',
+                SYSDATE - TRUNC(DBMS_RANDOM.VALUE(1, 180))
+            );
+        END IF;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+
+-- =====================================================
+-- BORROWS (random borrows across members and resources)
+-- Some returned, some still active, a few overdue
+-- =====================================================
+
+BEGIN
+    FOR i IN 1..60 LOOP
+        DECLARE
+            v_memberID   NUMBER;
+            v_resourceID NUMBER;
+            v_borrowDate DATE;
+            v_returnDate DATE;
+            v_available  NUMBER;
+        BEGIN
+            -- Pick a random member
+            SELECT "memberID"
+            INTO   v_memberID
+            FROM   (SELECT "memberID" FROM "member_table" ORDER BY DBMS_RANDOM.VALUE)
+            WHERE  ROWNUM = 1;
+
+            -- Pick a random resource that still has copies
+            SELECT "resourceID"
+            INTO   v_resourceID
+            FROM   (SELECT "resourceID" FROM "resource_table"
+                    WHERE  "availableCopies" > 0
+                    ORDER BY DBMS_RANDOM.VALUE)
+            WHERE  ROWNUM = 1;
+
+            v_borrowDate := SYSDATE - TRUNC(DBMS_RANDOM.VALUE(1, 120));
+
+            -- ~60% returned, ~40% still active (some of those will be overdue)
+            IF MOD(i, 5) != 0 THEN
+                v_returnDate := v_borrowDate + TRUNC(DBMS_RANDOM.VALUE(3, 21));
+                -- Don't return in the future
+                IF v_returnDate > SYSDATE THEN
+                    v_returnDate := SYSDATE;
+                END IF;
+            ELSE
+                v_returnDate := NULL;  -- active borrow
+            END IF;
+
+            -- Check this member doesn't already have an active borrow of this resource
+            SELECT COUNT(*)
+            INTO   v_available
+            FROM   "borrow_table"
+            WHERE  "memberID"   = v_memberID
+              AND  "resourceID" = v_resourceID
+              AND  "returnDate" IS NULL;
+
+            IF v_available = 0 THEN
+                INSERT INTO "borrow_table"
+                    ("memberID","resourceID","borrowDate","returnDate")
+                VALUES
+                    (v_memberID, v_resourceID, v_borrowDate, v_returnDate);
+
+                -- Decrement availableCopies for active borrows
+                IF v_returnDate IS NULL THEN
+                    UPDATE "resource_table"
+                    SET    "availableCopies" = "availableCopies" - 1
+                    WHERE  "resourceID" = v_resourceID
+                      AND  "availableCopies" > 0;
+                END IF;
+            END IF;
+
+        EXCEPTION
+            WHEN NO_DATA_FOUND THEN NULL;  -- no resource with copies left, skip
+        END;
+    END LOOP;
+    COMMIT;
+END;
+/
+
+
+-- =====================================================
+-- SHOWS
+-- [FIX] Replaced hardcoded branchIDs with name lookups
+--       so the inserts are safe regardless of ID sequence
+-- =====================================================
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Nairobi Central Office'),
+    'Nairobi', DATE '2025-03-15');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kiambu Farmers Hub'),
+    'Kiambu', DATE '2025-04-10');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Nakuru Agricultural Center'),
+    'Nakuru', DATE '2025-05-05');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Eldoret Grain Office'),
+    'Eldoret', DATE '2025-06-12');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Nyeri Coffee Support Office'),
+    'Nyeri', DATE '2025-04-22');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kericho Tea Development Office'),
+    'Kericho', DATE '2025-07-08');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kisumu Lakeside Farmers Office'),
+    'Kisumu', DATE '2025-08-14');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Machakos Dryland Farming Center'),
+    'Machakos', DATE '2025-09-03');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Meru Agribusiness Support Center'),
+    'Meru', DATE '2025-05-18');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kitale Maize Belt Office'),
+    'Kitale', DATE '2025-06-25');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Embu Irrigation Support Office'),
+    'Embu', DATE '2025-03-28');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kakamega Sugarcane Farmers Office'),
+    'Kakamega', DATE '2025-07-19');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Garissa Livestock Support Center'),
+    'Garissa', DATE '2025-10-02');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Isiolo Pastoralist Support Office'),
+    'Isiolo', DATE '2025-11-11');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Mombasa Coastal Agriculture Office'),
+    'Mombasa', DATE '2025-12-05');
+
+-- Repeat seasonal shows (2026 cycle)
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Nairobi Central Office'),
+    'Nairobi', DATE '2026-03-18');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Nakuru Agricultural Center'),
+    'Nakuru', DATE '2026-05-09');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Eldoret Grain Office'),
+    'Eldoret', DATE '2026-06-15');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kisumu Lakeside Farmers Office'),
+    'Kisumu', DATE '2026-08-20');
+
+INSERT INTO "show_table" ("branchID","town","eventDate") VALUES (
+    (SELECT "branchID" FROM "branch_table" WHERE "branchName" = 'Kitale Maize Belt Office'),
+    'Kitale', DATE '2026-06-28');
+
+COMMIT;
