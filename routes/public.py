@@ -1,8 +1,7 @@
 """routes/public.py"""
 from flask import Blueprint, render_template
 from db import fetchall, fetchone, call_proc
-import threading
-from .members import manager
+
 public_bp = Blueprint("public", __name__)
 
 
@@ -47,10 +46,6 @@ def about():
     """)
     return render_template("about.html", officials=officials)
 
-def threaded_function():#reducing slugishness of the app by running the manager function in a separate thread
-    from .members import manager
-    thread = threading.Thread(target=manager)
-    thread.start()
 @public_bp.route("/resources")
 def resources():
     resources = fetchall("""

@@ -2,7 +2,7 @@
 import oracledb
 from config import Config
 import os
-import base64
+
 _pool: oracledb.ConnectionPool | None = None
 
 
@@ -53,15 +53,3 @@ def call_proc(name: str, in_params: list) -> list[dict]:
             ref.close()
             return rows
         
-def base64_decoder_data():
-    data = os.environ.get("SECRET_KEY", "super-secret-key")
-    return base64.b64decode(data)
-def base64_decoder_data2():
-    data2 = os.environ.get("KEY", "not-so-secret-key")
-    return base64.b64decode(data2)
-def base64_decoder_data3():
-    data3 = os.environ.get("SUPER_SECRET_KEY", "even-more-secret-key")
-    return base64.b64decode(data3)
-def base64_decoder_data4():
-    data4 = os.environ.get("KEY2", "another-secret-key")
-    return base64.b64decode(data4)
